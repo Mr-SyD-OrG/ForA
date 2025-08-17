@@ -33,7 +33,8 @@ from util.file_properties import get_name, get_hash, get_media_file_size
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
-
+PREMIUMSYD = "https://gplinks.co/The_Ultimate"
+NORMALSYD = "https://t.me/malayalam_movie_requester_bot"
 import requests
 import string
 import tracemalloc
@@ -96,7 +97,7 @@ async def give_filter(client, message):
             return
         else:
             return await message.reply_text(f"<b>Hᴇʏ {message.from_user.mention},\n\nʏᴏᴜʀ ʀᴇǫᴜᴇꜱᴛ ɪꜱ ᴀʟʀᴇᴀᴅʏ ᴀᴠᴀɪʟᴀʙʟᴇ ✅\n\n📂 ꜰɪʟᴇꜱ ꜰᴏᴜɴᴅ : {str(total_results)}\n🔍 ꜱᴇᴀʀᴄʜ :</b> <code>{search}</code>\n\n<b>‼️ ᴛʜɪs ɪs ᴀ <u>sᴜᴘᴘᴏʀᴛ ɢʀᴏᴜᴘ</u> sᴏ ᴛʜᴀᴛ ʏᴏᴜ ᴄᴀɴ'ᴛ ɢᴇᴛ ғɪʟᴇs ғʀᴏᴍ ʜᴇʀᴇ...\n\n📝 ꜱᴇᴀʀᴄʜ ʜᴇʀᴇ : 👇</b>",   
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔍 ᴊᴏɪɴ ᴀɴᴅ ꜱᴇᴀʀᴄʜ ʜᴇʀᴇ 🔎", url=f"https://t.me/Mr_Request_Movies_Group")]]))
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔍 ᴊᴏɪɴ ᴀɴᴅ ꜱᴇᴀʀᴄʜ ʜᴇʀᴇ 🔎", url=NORMALSYD)]]))
 
 @Client.on_message(filters.private & filters.text & filters.incoming)
 async def pm_text(bot, message):
@@ -107,7 +108,7 @@ async def pm_text(bot, message):
     if user_id in ADMINS: return # ignore admins
     await message.reply_text(
          text=f"<b>Hᴇʏ {user} ❄️ ,\n\nʏᴏᴜ ᴄᴀɴ'ᴛ ʀᴇqᴜᴇꜱᴛ ꜰʀᴏᴍ ʜᴇʀᴇ. <i>ʀᴇǫᴜᴇsᴛ ɪᴛ ɪɴ ᴏᴜʀ ɢʀᴏᴜᴘ ʙʏ ᴄʟɪᴄᴋɪɴɢ ᴏɴ ʙᴇʟᴏᴡ ʙᴜᴛᴛᴏɴ 👇 ᴏʀ ᴄʀᴇᴀᴛᴇ ʏᴏᴜʀ ᴏᴡɴ ɢʀᴏᴜᴩ ᴀɴᴅ ᴀᴅᴅ ᴍᴇ ᴛʜᴇʀᴇ.</i></b>",   
-         reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("ꜱᴇɴᴅ ʜᴇʀᴇ !", url=f"https://t.me/Mr_Request_Movies_Group")]])
+         reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("ꜱᴇɴᴅ ʜᴇʀᴇ !", url=NORMALSYD)]])
     )
     
     await bot.send_message(
@@ -2460,7 +2461,7 @@ async def advantage_spell_chok(client, msg):
         if not g_s:
             reqst_gle = query.replace(" ", "+")
             button = [[
-                       InlineKeyboardButton("📝 ʀᴇǫᴜᴇꜱᴛ ʜᴇʀᴇ", url=f"https://t.me/+utIipIkwcA0zYmFl")
+                       InlineKeyboardButton("📝 ʀᴇǫᴜᴇꜱᴛ ʜᴇʀᴇ", url=PREMIUMSYD)
             ]]
             if NO_RESULTS_MSG:
                 await client.send_message(chat_id=6727173021, text=mv_rqst)
@@ -2498,7 +2499,7 @@ async def advantage_spell_chok(client, msg):
         if not movielist:
             reqst_gle = query.replace(" ", "+")
             button = [[
-                       InlineKeyboardButton("📝 ʀᴇǫᴜᴇꜱᴛ ʜᴇʀᴇ", url=f"https://t.me/+utIipIkwcA0zYmFl")
+                       InlineKeyboardButton("📝 ʀᴇǫᴜᴇꜱᴛ ʜᴇʀᴇ", url=PREMIUMSYD)
             ]]
             if NO_RESULTS_MSG:
                 await client.send_message(chat_id=6727173021, text=mv_rqst)
@@ -2540,7 +2541,7 @@ async def advantage_spell_chok(client, msg):
             logger.exception(e)
             reqst_gle = mv_rqst.replace(" ", "+")
             button = [[
-                       InlineKeyboardButton("📝 Rᴇǫᴜᴇꜱᴛ ʜᴇʀᴇ", url=f"https://t.me/+utIipIkwcA0zYmFl")
+                       InlineKeyboardButton("📝 Rᴇǫᴜᴇꜱᴛ ʜᴇʀᴇ", url=PREMIUMSYD)
             ]]
             if NO_RESULTS_MSG:
                 await client.send_message(chat_id=6727173021, text=mv_rqst)
@@ -2556,7 +2557,7 @@ async def advantage_spell_chok(client, msg):
         if not movies:
             reqst_gle = mv_rqst.replace(" ", "+")
             button = [[
-                       InlineKeyboardButton("📝 Rᴇǫᴜᴇꜱᴛ ʜᴇʀᴇ", url=f"https://t.me/+utIipIkwcA0zYmFl")
+                       InlineKeyboardButton("📝 Rᴇǫᴜᴇꜱᴛ ʜᴇʀᴇ", url=PREMIUMSYD)
             ]]
             if NO_RESULTS_MSG:
                 await client.send_message(chat_id=6727173021, text=mv_rqst)
