@@ -35,44 +35,37 @@ async def start(client, message):
         await message.reply(script.GSTART_TXT.format(message.from_user.mention if message.from_user else message.chat.title, temp.U_NAME, temp.B_NAME), reply_markup=reply_markup, disable_web_page_preview=True)
         await asyncio.sleep(2) # 😢 https://github.com/EvamariaTG/EvaMaria/blob/master/plugins/p_ttishow.py#L17 😬 wait a bit, before checking.
         if not await db.get_chat(message.chat.id):
-            total=await client.get_chat_members_count(message.chat.id)
-            await client.send_message(LOG_CHANNEL, script.LOG_TEXT_G.format(message.chat.title, message.chat.id, total, "Unknown"))       
-            await db.add_chat(message.chat.id, message.chat.title)
+            try:
+                total=await client.get_chat_members_count(message.chat.id)
+                await client.send_message(LOG_CHANNEL, script.LOG_TEXT_G.format(message.chat.title, message.chat.id, total, "Unknown"))       
+                await db.add_chat(message.chat.id, message.chat.title)
+            except Exception as e:
         return 
     if not await db.is_user_exist(message.from_user.id):
         await db.add_user(message.from_user.id, message.from_user.first_name)
         await client.send_message(LOG_CHANNEL, script.LOG_TEXT_P.format(message.from_user.id, message.from_user.mention))
     if len(message.command) != 2:
         buttons = [[
-                    InlineKeyboardButton('☒ Δᴅᴅ Mᴇ Tᴏ Yᴏᴜʀ Gʀᴏᴜᴩ ☒', url=f'http://telegram.me/{temp.U_NAME}?startgroup=true')
+                    InlineKeyboardButton('☒ ᴀᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴩ ☒', url=f'http://telegram.me/{temp.U_NAME}?startgroup=true')
                 ],[
-                    InlineKeyboardButton('⇱  ᴄ0ᴍᴍᴀɴᴅꜱ  ⇲', callback_data='help'),
-                    InlineKeyboardButton('⊛ Δʙᴏᴜᴛ ⊛', callback_data='about')
+                    InlineKeyboardButton('⇱  ᴄᴏᴍᴍᴀɴᴅꜱ  ⇲', callback_data='help'),
+                    InlineKeyboardButton('⊛ ᴀʙᴏᴜᴛ ⊛', callback_data='about')
                 ],[
-                    InlineKeyboardButton('⚝ ᴜᴘᦔΔᴛꫀ𝘴 ⚝', callback_data='channels')
+                    InlineKeyboardButton('⚝ ᴜᴘᦔᴀᴛꫀꜱ ⚝', callback_data='channels')
                   ]]
         reply_markup = InlineKeyboardMarkup(buttons)
-        current_time = datetime.now(pytz.timezone(TIMEZONE))
-        curr_time = current_time.hour        
-        if curr_time < 12:
-            gtxt = "Gᴏᴏᴅ ᴍᴏʀɴɪɴG 🌄👋" 
-        elif curr_time < 17:
-            gtxt = "Gᴏᴏᴅ ᴀғᴛᴇʀɴᴏᴏɴ 🥵👋" 
-        elif curr_time < 21:
-            gtxt = "Gᴏᴏᴅ ᴇᴠᴇɴɪɴG 🌅👋"
-        else:
-            gtxt = "Gᴏᴏᴅ ɴɪɢʜT 🥱😪👋"
-        m=await message.reply_text("<i>ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ <b>ᴍᴏᴠɪᴇꜱ ꜰᴏʀᴀɢᴇ [ꜱᴇᴀʀᴄʜ] ʙᴏᴛ</b>.\nʜᴏᴘᴇ ʏᴏᴜ'ʀᴇ ᴅᴏɪɴɢ ᴡᴇʟʟ...</i>")
+        
+        m=await message.reply_text("<i>ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ <b>ꜱᴇᴀʀᴄʜᴀʀᴄ ʙᴏᴛ</b>.\nʜᴏᴘᴇ ʏᴏᴜ'ʀᴇ ᴅᴏɪɴɢ ᴡᴇʟʟ...</i>")
         await asyncio.sleep(0.6)
         await m.edit_text("Dᴏɴᴛ ꜰᴏʀɢᴇᴛ ᴛᴏ ꜱᴜᴩᴩᴏʀᴛ ᴜꜱ! @BOT_CRAckers 🍋")
         await asyncio.sleep(1.0)
         await m.delete()        
-        m=await message.reply_sticker("CAACAgUAAxkBAAEEhMhoDZPwkkEHBXskRevsL_egtsTeUgACNxgAAhdtgVdIA1U0xHgGWh4E") 
-        await asyncio.sleep(1)
-        await m.delete()
+     #   m=await message.reply_sticker("CAACAgUAAxkBAAEEhMhoDZPwkkEHBXskRevsL_egtsTeUgACNxgAAhdtgVdIA1U0xHgGWh4E") 
+      #  await asyncio.sleep(1)
+      #  await m.delete()
         await message.reply_photo(
             photo=random.choice(PICS),
-            caption=script.START_TXT.format(message.from_user.mention, gtxt, temp.U_NAME, temp.B_NAME),
+            caption=script.START_TXT.format(message.from_user.mention, temp.U_NAME, temp.B_NAME),
             reply_markup=reply_markup,
             parse_mode=enums.ParseMode.HTML
         )
@@ -82,10 +75,10 @@ async def start(client, message):
         try:
             # Fetch subscription statuses once
             is_req_sub = await is_req_subscribed(client, message)
-        #    is_sub = await is_subscribed(client, message)
+            is_sub = await is_subscribed(client, message)
 
-          #  if not (is_req_sub and is_sub):
-            if not is_req_sub:
+            if not (is_req_sub and is_sub):
+            #if not is_req_sub:
                 try:
                     invite_link = await client.create_chat_invite_link(int(AUTH_CHANNEL), creates_join_request=True)
                 except ChatAdminRequired:
@@ -98,8 +91,8 @@ async def start(client, message):
                 if not is_req_sub:
                     btn.append([InlineKeyboardButton("⊛ Jᴏɪɴ Uᴘᴅᴀᴛᴇꜱ CʜᴀɴɴᴇL ¹⊛", url=invite_link.invite_link)])
 
-            #    if not is_sub:
-               #     btn.append([InlineKeyboardButton("⊛ Jᴏɪɴ Uᴘᴅᴀᴛᴇꜱ CʜᴀɴɴᴇL ²⊛", url="https://t.me/Bot_Cracker")])
+                if not is_sub:
+                    btn.append([InlineKeyboardButton("⊛ Jᴏɪɴ Uᴘᴅᴀᴛᴇꜱ CʜᴀɴɴᴇL ²⊛", url="https://t.me/Bot_Cracker")])
 
                 if len(message.command) > 1 and message.command[1] != "subscribe":
                     try:
