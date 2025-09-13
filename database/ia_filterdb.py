@@ -75,7 +75,7 @@ def expand_language_variants(query: str) -> list[str]:
     return variants
 
 
-async def get_searchbest_results(client, chat_id, query, file_type=None, max_results=10, offset=0, filter=False):
+async def get_search_results(client, chat_id, query, file_type=None, max_results=10, offset=0, filter=False):
     """For given query return (results, next_offset, total_results)"""
     try:
         if chat_id is not None:
@@ -186,114 +186,6 @@ ORDINALS = {
     "tenth": 10, "ten": 10, "10th": 10,
     # extend if needed
 }
-
-from rapidfuzz import fuzz, process
-
-async def get_search_results(client, chat_id, query, file_type=None, max_results=10, offset=0, filter=False, use_fuzzy=True, fuzzy_threshold=75):
-    """Hybrid search: regex in DB first, optional fuzzy matching on results."""
-    try:
-        if chat_id is not None:
-            settings = await get_settings(int(chat_id))
-            try:
-                if settings['max_btn']:
-                    max_results = 10
-                else:
-                    max_results = int(MAX_B_TN)
-            except KeyError:
-                await save_group_settings(int(chat_id), 'max_btn', False)
-                settings = await get_settings(int(chat_id))
-                if settings['max_btn']:
-                    max_results = 10
-                else:
-                    max_results = int(MAX_B_TN)
-
-        query = query.strip()
-        query = normalize_numbers(query)  # handle ordinals
-
-        # Season/episode variants
-        search_variants = [query]
-        season_match = re.search(r"season\s*(\d+)", query, re.IGNORECASE)
-        episode_match = re.search(r"episode\s*(\d+)", query, re.IGNORECASE)
-
-        if season_match:
-            sn = int(season_match.group(1))
-            search_variants.append(re.sub(r"season\s*\d+", f"S{sn:02d}", query, flags=re.IGNORECASE))
-        if episode_match:
-            ep = int(episode_match.group(1))
-            search_variants.append(re.sub(r"episode\s*\d+", f"E{ep:02d}", query, flags=re.IGNORECASE))
-            search_variants.append(re.sub(r"episode\s*\d+", f"EP{ep}", query, flags=re.IGNORECASE))
-            search_variants.append(re.sub(r"episode\s*\d+", f"EP{ep:02d}", query, flags=re.IGNORECASE))
-        if season_match and episode_match:
-            search_variants.append(
-                re.sub(r"season\s*\d+\s*episode\s*\d+", f"S{sn:02d}E{ep:02d}", query, flags=re.IGNORECASE)
-            )
-
-        # Language expansion
-        expanded_variants = []
-        for q in search_variants:
-            expanded_variants.extend(expand_language_variants(q))
-        search_variants = list(set(expanded_variants))
-
-        # Compile regex list
-        regex_list = []
-        for q in search_variants:
-            if not q:
-                raw_pattern = "."
-            elif " " not in q:
-                raw_pattern = rf"(\b|[\.\+\-_]){re.escape(q)}(\b|[\.\+\-_])"
-            else:
-                escaped_q = re.escape(q)
-                raw_pattern = escaped_q.replace(r"\ ", r".*[\s\.\+\-_]")
-            try:
-                regex_list.append(re.compile(raw_pattern, flags=re.IGNORECASE))
-            except Exception as e:
-                await client.send_message(ADMIN_ID, f"⚠️ Regex compile failed\nQuery: `{q}`\nError: `{e}`")
-                continue
-
-        if not regex_list:
-            return [], "", 0
-
-        # MongoDB filter
-        if USE_CAPTION_FILTER:
-            db_filter = {"$or": [{"file_name": {"$in": regex_list}}, {"caption": {"$in": regex_list}}]}
-        else:
-            db_filter = {"file_name": {"$in": regex_list}}
-        if file_type:
-            db_filter["file_type"] = file_type
-
-        # Pre-filter using regex in DB
-        total_results = await Media.count_documents(db_filter)
-        next_offset = offset + max_results
-        if next_offset > total_results:
-            next_offset = ""
-
-        cursor = Media.find(db_filter)
-        cursor.sort("$natural", -1)
-        cursor.skip(offset).limit(max_results)
-        files = await cursor.to_list(length=max_results)
-
-        # Optional fuzzy filtering
-        if use_fuzzy and files:
-            scored = []
-            for f in files:
-                target_strings = [f.get("file_name", "")]
-                if USE_CAPTION_FILTER and "caption" in f:
-                    target_strings.append(f["caption"])
-                score = max(fuzz.token_sort_ratio(query, s) for s in target_strings)
-                if score >= fuzzy_threshold:
-                    scored.append((score, f))
-            # Sort by score descending
-            scored.sort(reverse=True, key=lambda x: x[0])
-            files = [f for score, f in scored]
-
-        return files, next_offset, total_results
-
-    except Exception as e:
-        await client.send_message(
-            ADMIN_ID,
-            f"❌ Error in get_search_results\nChat: `{chat_id}`\nQuery: `{query}`\nError: `{e}`"
-        )
-        return [], "", 0
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
