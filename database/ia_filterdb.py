@@ -75,7 +75,7 @@ def expand_language_variants(query: str) -> list[str]:
     return variants
 
 
-async def get_searcults(client, chat_id, query, file_type=None, max_results=10, offset=0, filter=False):
+async def get_search_results(client, chat_id, query, file_type=None, max_results=10, offset=0, filter=False):
     """For given query return (results, next_offset, total_results)"""
     try:
         if chat_id is not None:
@@ -256,7 +256,7 @@ def normalize_numbers(text: str) -> str:
     return " ".join(out)
 
 
-async def get_search_results(client, chat_id, query, file_type=None, max_results=10, offset=0, filter=False):
+async def get_search_ress(client, chat_id, query, file_type=None, max_results=10, offset=0, filter=False):
     """For given query return (results, next_offset, total_results)"""
     try:
         if chat_id is not None:
