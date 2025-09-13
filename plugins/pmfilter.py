@@ -92,7 +92,7 @@ async def give_filter(client, message):
                     await auto_filter(client, message) 
     else: #a better logic to avoid repeated lines of code in auto_filter function
         search = message.text
-        temp_files, temp_offset, total_results = await get_search_results(chat_id=message.chat.id, query=search.lower(), offset=0, filter=True)
+        temp_files, temp_offset, total_results = await get_search_results(client, chat_id=message.chat.id, query=search.lower(), offset=0, filter=True)
         if total_results == 0:
             return
         else:
@@ -135,7 +135,7 @@ async def next_page(bot, query):
         await query.answer(script.OLD_ALRT_TXT.format(query.from_user.first_name),show_alert=True)
         return
 
-    files, n_offset, total = await get_search_results(query.message.chat.id, search, offset=offset, filter=True)
+    files, n_offset, total = await get_search_results(bot, query.message.chat.id, search, offset=offset, filter=True)
     try:
         n_offset = int(n_offset)
     except:
@@ -293,7 +293,7 @@ async def advantage_spoll_choker(bot, query):
     if gl == False:
         k = await manual_filters(bot, query.message, text=movie)
         if k == False:
-            files, offset, total_results = await get_search_results(query.message.chat.id, movie, offset=0, filter=True)
+            files, offset, total_results = await get_search_results(bot, query.message.chat.id, movie, offset=0, filter=True)
             if files:
                 k = (movie, files, offset, total_results)
                 await auto_filter(bot, query, k)
@@ -380,7 +380,7 @@ async def filter_qualities_cb_handler(client: Client, query: CallbackQuery):
         search = f"{search} {qual}" 
     BUTTONS[key] = search
 
-    files, offset, total_results = await get_search_results(chat_id, search, offset=0, filter=True)
+    files, offset, total_results = await get_search_results(client, chat_id, search, offset=0, filter=True)
     if not files:
         await query.answer("🚫 ɴᴏ ꜰɪʟᴇꜱ ᴡᴇʀᴇ ꜰᴏᴜɴᴅ 🚫 ʀᴇᴩᴏʀᴛ ᴛᴏ ᴛɢᴇ ᴀᴅᴍɪɴ.. 💥", show_alert=1)
         return
@@ -543,7 +543,7 @@ async def filter_languages_cb_handler(client: Client, query: CallbackQuery):
         search = f"{search} {lang}" 
     BUTTONS[key] = search
 
-    files, offset, total_results = await get_search_results(chat_id, search, offset=0, filter=True)
+    files, offset, total_results = await get_search_results(client, chat_id, search, offset=0, filter=True)
     if not files:
         await query.answer("🚫Sᴏʀʀʏ ɴᴏ ꜰɪʟᴇꜱ ᴡᴇʀᴇ ꜰᴏᴜɴᴅ 🚫 ʀᴇᴩᴏʀᴛ ᴛᴏ ᴛʜᴇ ᴏᴡɴᴇʀ..ɪᴍᴍᴇᴅɪᴀᴛᴇʟʏ.. 💥", show_alert=1)
         return
@@ -716,7 +716,7 @@ async def filter_seasons_cb_handler(client: Client, query: CallbackQuery):
     search = f"{search} {seas}"
     BUTTONS0[key] = search
     
-    files, _, _ = await get_search_results(chat_id, search, max_results=10)
+    files, _, _ = await get_search_results(client, chat_id, search, max_results=10)
     files = [file for file in files if re.search(seas, file.file_name, re.IGNORECASE)]
     
     seas1 = "s01" if seas == "season 1" else "s02" if seas == "season 2" else "s03" if seas == "season 3" else "s04" if seas == "season 4" else "s05" if seas == "season 5" else "s06" if seas == "season 6" else "s07" if seas == "season 7" else "s08" if seas == "season 8" else "s09" if seas == "season 9" else "s10" if seas == "season 10" else ""
