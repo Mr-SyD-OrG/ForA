@@ -9,6 +9,21 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from marshmallow.exceptions import ValidationError
 from info import DATABASE_URI, DATABASE_NAME, COLLECTION_NAME, USE_CAPTION_FILTER, MAX_B_TN
 from utils import get_settings, save_group_settings
+import re
+
+ORDINALS = {
+    "first": 1, "one": 1, "1st": 1,
+    "second": 2, "two": 2, "2nd": 2,
+    "third": 3, "three": 3, "3rd": 3,
+    "fourth": 4, "four": 4, "4th": 4,
+    "fifth": 5, "five": 5, "5th": 5,
+    "sixth": 6, "six": 6, "6th": 6,
+    "seventh": 7, "seven": 7, "7th": 7,
+    "eighth": 8, "eight": 8, "8th": 8,
+    "ninth": 9, "nine": 9, "9th": 9,
+    "tenth": 10, "ten": 10, "10th": 10,
+    # extend if needed
+}
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -67,7 +82,99 @@ async def save_file(media):
 
 
 
+def normalize_numbers(text: str) -> str:
+    """Replace ordinal words with digits."""
+    tokens = text.lower().split()
+    out = []
+    for t in tokens:
+        if t in ORDINALS:
+            out.append(str(ORDINALS[t]))
+        else:
+            out.append(t)
+    return " ".join(out)
+
 async def get_search_results(chat_id, query, file_type=None, max_results=10, offset=0, filter=False):
+    """For given query return (results, next_offset, total_results)"""
+
+    if chat_id is not None:
+        settings = await get_settings(int(chat_id))
+        try:
+            if settings['max_btn']:
+                max_results = 10
+            else:
+                max_results = int(MAX_B_TN)
+        except KeyError:
+            await save_group_settings(int(chat_id), 'max_btn', False)
+            settings = await get_settings(int(chat_id))
+            if settings['max_btn']:
+                max_results = 10
+            else:
+                max_results = int(MAX_B_TN)
+
+    query = query.strip()
+    query = normalize_numbers(query)  # handle ordinals like "first" -> "1"
+
+    search_variants = [query]
+
+    # Season detection
+    season_match = re.search(r"season\s*(\d+)", query, re.IGNORECASE)
+    episode_match = re.search(r"episode\s*(\d+)", query, re.IGNORECASE)
+
+    if season_match:
+        sn = int(season_match.group(1))
+        search_variants.append(re.sub(r"season\s*\d+", f"S{sn:02d}", query, flags=re.IGNORECASE))
+
+    if episode_match:
+        ep = int(episode_match.group(1))
+        # Add EP formats
+        search_variants.append(re.sub(r"episode\s*\d+", f"E{ep:02d}", query, flags=re.IGNORECASE))
+        search_variants.append(re.sub(r"episode\s*\d+", f"EP{ep}", query, flags=re.IGNORECASE))
+        search_variants.append(re.sub(r"episode\s*\d+", f"EP{ep:02d}", query, flags=re.IGNORECASE))
+
+    if season_match and episode_match:
+        sn = int(season_match.group(1))
+        ep = int(episode_match.group(1))
+        # Append combined SxxEyy format
+        search_variants.append(re.sub(r"season\s*\d+\s*episode\s*\d+", f"S{sn:02d}E{ep:02d}", query, flags=re.IGNORECASE))
+
+    regex_list = []
+    for q in search_variants:
+        if not q:
+            raw_pattern = "."
+        elif " " not in q:
+            raw_pattern = rf"(\b|[\.\+\-_]){re.escape(q)}(\b|[\.\+\-_])"
+        else:
+            raw_pattern = re.sub(r"\s+", r".*[\s\.\+\-_]", re.escape(q))
+        try:
+            regex_list.append(re.compile(raw_pattern, flags=re.IGNORECASE))
+        except:
+            continue
+
+    if not regex_list:
+        return [], "", 0
+
+    if USE_CAPTION_FILTER:
+        filter = {"$or": [{"file_name": {"$in": regex_list}}, {"caption": {"$in": regex_list}}]}
+    else:
+        filter = {"file_name": {"$in": regex_list}}
+
+    if file_type:
+        filter["file_type"] = file_type
+
+    total_results = await Media.count_documents(filter)
+    next_offset = offset + max_results
+    if next_offset > total_results:
+        next_offset = ""
+
+    cursor = Media.find(filter)
+    cursor.sort("$natural", -1)
+    cursor.skip(offset).limit(max_results)
+    files = await cursor.to_list(length=max_results)
+
+    return files, next_offset, total_results
+
+
+async def get_seach_results(chat_id, query, file_type=None, max_results=10, offset=0, filter=False):
     """For given query return (results, next_offset)"""
     if chat_id is not None:
         settings = await get_settings(int(chat_id))
