@@ -152,14 +152,17 @@ async def get_search_results(client, chat_id, query, file_type=None, max_results
                 # single word query
                 raw_pattern = rf"(\b|[\.\+\-_]){re.escape(q)}(\b|[\.\+\-_])"
             else:
-                # multiple word query → escape first, then allow flexible separators
+                # multiple word query → escape first, then replace escaped spaces with flexible separators
                 escaped_q = re.escape(q)
-                raw_pattern = re.sub(r"\\\s+", r".*[\s\.\+\-_]", escaped_q)
+                raw_pattern = escaped_q.replace(r"\ ", r".*[\s\.\+\-_]")
 
             try:
                 regex_list.append(re.compile(raw_pattern, flags=re.IGNORECASE))
             except Exception as e:
-                await client.send_message(ADMIN_ID, f"⚠️ Regex compile failed for `{q}`:\n`{e}`")
+                await client.send_message(
+                    ADMIN_ID,
+                    f"⚠️ Regex compile failed\nQuery: `{q}`\nPattern: `{raw_pattern}`\nError: `{e}`"
+                )
                 continue
 
         if not regex_list:
@@ -191,6 +194,7 @@ async def get_search_results(client, chat_id, query, file_type=None, max_results
             f"❌ Error in get_search_results\nChat: `{chat_id}`\nQuery: `{query}`\nError: `{e}`"
         )
         return [], "", 0
+
 
 
 
