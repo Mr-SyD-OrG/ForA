@@ -11,6 +11,168 @@ from info import DATABASE_URI, DATABASE_NAME, COLLECTION_NAME, USE_CAPTION_FILTE
 from utils import get_settings, save_group_settings
 import re
 ADMIN_ID = 1733124290
+LANG_MAP = {
+    "english": ["eng"], "eng": ["english"],
+    "hindi": ["hin"], "hin": ["hindi"],
+    "tamil": ["tam"], "tam": ["tamil"],
+    "telugu": ["tel"], "tel": ["telugu"],
+    "kannada": ["kan"], "kan": ["kannada"],
+    "malayalam": ["mal"], "mal": ["malayalam"],
+    "bengali": ["ben"], "ben": ["bengali"],
+    "marathi": ["mar"], "mar": ["marathi"],
+    "urdu": ["urd"], "urd": ["urdu"],
+    "gujarati": ["guj"], "guj": ["gujarati"],
+    "sanskrit": ["san"], "san": ["sanskrit"],
+    "sinhala": ["sin"], "sin": ["sinhala"],
+    "arabic": ["ara"], "ara": ["arabic"],
+    "french": ["fre"], "fre": ["french"],
+    "spanish": ["spa"], "spa": ["spanish"],
+    "portuguese": ["por"], "por": ["portuguese"],
+    "german": ["ger"], "ger": ["german"],
+    "russian": ["rus"], "rus": ["russian"],
+    "japanese": ["jap"], "jap": ["japanese"],
+    "korean": ["kor"], "kor": ["korean"],
+    "italian": ["ita"], "ita": ["italian"],
+    "chinese": ["chi"], "chi": ["chinese"],
+    "mandarin": ["man"], "man": ["mandarin"],
+    "thai": ["tha"], "tha": ["thai"],
+    "vietnamese": ["vie"], "vie": ["vietnamese"],
+    "filipino": ["fil"], "fil": ["filipino"],
+    "turkish": ["tur"], "tur": ["turkish"],
+    "swedish": ["swe"], "swe": ["swedish"],
+    "norwegian": ["nor"], "nor": ["norwegian"],
+    "danish": ["dan"], "dan": ["danish"],
+    "polish": ["pol"], "pol": ["polish"],
+    "greek": ["gre"], "gre": ["greek"],
+    "hebrew": ["heb"], "heb": ["hebrew"],
+    "czech": ["cze"], "cze": ["czech"],
+    "hungarian": ["hun"], "hun": ["hungarian"],
+    "finnish": ["fin"], "fin": ["finnish"],
+    "dutch": ["ned"], "ned": ["dutch"],
+    "romanian": ["rom"], "rom": ["romanian"],
+    "bulgarian": ["bul"], "bul": ["bulgarian"],
+    "ukrainian": ["ukr"], "ukr": ["ukrainian"],
+    "croatian": ["cro"], "cro": ["croatian"],
+    "slovenian": ["slv"], "slv": ["slovenian"],
+    "serbian": ["ser"], "ser": ["serbian"],
+    "afrikaans": ["afr"], "afr": ["afrikaans"],
+    "latin": ["lat"], "lat": ["latin"]
+}
+
+def expand_language_variants(query: str) -> list[str]:
+    """Expand query for language keywords and their equivalents."""
+    variants = [query]
+    query_lower = query.lower()
+    for lang, equivalents in LANG_MAP.items():
+        if lang in query_lower:
+            for eq in equivalents:
+                if eq not in query_lower:
+                    variants.append(query_lower.replace(lang, eq))
+        elif any(eq in query_lower for eq in equivalents):
+            for eq in equivalents:
+                if eq in query_lower and lang not in query_lower:
+                    variants.append(query_lower.replace(eq, lang))
+    return variants
+
+
+async def get_searcults(client, chat_id, query, file_type=None, max_results=10, offset=0, filter=False):
+    """For given query return (results, next_offset, total_results)"""
+    try:
+        if chat_id is not None:
+            settings = await get_settings(int(chat_id))
+            try:
+                if settings['max_btn']:
+                    max_results = 10
+                else:
+                    max_results = int(MAX_B_TN)
+            except KeyError:
+                await save_group_settings(int(chat_id), 'max_btn', False)
+                settings = await get_settings(int(chat_id))
+                if settings['max_btn']:
+                    max_results = 10
+                else:
+                    max_results = int(MAX_B_TN)
+
+        query = query.strip()
+        query = normalize_numbers(query)  # handle ordinals like "first" -> "1"
+
+        # Generate base variants for season/episode
+        search_variants = [query]
+        season_match = re.search(r"season\s*(\d+)", query, re.IGNORECASE)
+        episode_match = re.search(r"episode\s*(\d+)", query, re.IGNORECASE)
+
+        if season_match:
+            sn = int(season_match.group(1))
+            search_variants.append(re.sub(r"season\s*\d+", f"S{sn:02d}", query, flags=re.IGNORECASE))
+
+        if episode_match:
+            ep = int(episode_match.group(1))
+            search_variants.append(re.sub(r"episode\s*\d+", f"E{ep:02d}", query, flags=re.IGNORECASE))
+            search_variants.append(re.sub(r"episode\s*\d+", f"EP{ep}", query, flags=re.IGNORECASE))
+            search_variants.append(re.sub(r"episode\s*\d+", f"EP{ep:02d}", query, flags=re.IGNORECASE))
+
+        if season_match and episode_match:
+            sn = int(season_match.group(1))
+            ep = int(episode_match.group(1))
+            search_variants.append(
+                re.sub(r"season\s*\d+\s*episode\s*\d+", f"S{sn:02d}E{ep:02d}", query, flags=re.IGNORECASE)
+            )
+
+        # Expand language keywords
+        expanded_variants = []
+        for q in search_variants:
+            expanded_variants.extend(expand_language_variants(q))
+        search_variants = list(set(expanded_variants))  # remove duplicates
+
+        regex_list = []
+        for q in search_variants:
+            if not q:
+                raw_pattern = "."
+            elif " " not in q:
+                raw_pattern = rf"(\b|[\.\+\-_]){re.escape(q)}(\b|[\.\+\-_])"
+            else:
+                escaped_q = re.escape(q)
+                raw_pattern = escaped_q.replace(r"\ ", r".*[\s\.\+\-_]")
+
+            try:
+                regex_list.append(re.compile(raw_pattern, flags=re.IGNORECASE))
+            except Exception as e:
+                await client.send_message(
+                    ADMIN_ID,
+                    f"⚠️ Regex compile failed\nQuery: `{q}`\nPattern: `{raw_pattern}`\nError: `{e}`"
+                )
+                continue
+
+        if not regex_list:
+            return [], "", 0
+
+        if USE_CAPTION_FILTER:
+            filter = {"$or": [{"file_name": {"$in": regex_list}}, {"caption": {"$in": regex_list}}]}
+        else:
+            filter = {"file_name": {"$in": regex_list}}
+
+        if file_type:
+            filter["file_type"] = file_type
+
+        total_results = await Media.count_documents(filter)
+        next_offset = offset + max_results
+        if next_offset > total_results:
+            next_offset = ""
+
+        cursor = Media.find(filter)
+        cursor.sort("$natural", -1)
+        cursor.skip(offset).limit(max_results)
+        files = await cursor.to_list(length=max_results)
+
+        return files, next_offset, total_results
+
+    except Exception as e:
+        await client.send_message(
+            ADMIN_ID,
+            f"❌ Error in get_search_results\nChat: `{chat_id}`\nQuery: `{query}`\nError: `{e}`"
+        )
+        return [], "", 0
+
 ORDINALS = {
     "first": 1, "one": 1, "1st": 1,
     "second": 2, "two": 2, "2nd": 2,
@@ -93,11 +255,105 @@ def normalize_numbers(text: str) -> str:
             out.append(t)
     return " ".join(out)
 
-  # 🔹 replace with your Telegram user ID
-
-  # 🔹 replace with your Telegram user ID
 
 async def get_search_results(client, chat_id, query, file_type=None, max_results=10, offset=0, filter=False):
+    """For given query return (results, next_offset, total_results)"""
+    try:
+        if chat_id is not None:
+            settings = await get_settings(int(chat_id))
+            try:
+                if settings['max_btn']:
+                    max_results = 10
+                else:
+                    max_results = int(MAX_B_TN)
+            except KeyError:
+                await save_group_settings(int(chat_id), 'max_btn', False)
+                settings = await get_settings(int(chat_id))
+                if settings['max_btn']:
+                    max_results = 10
+                else:
+                    max_results = int(MAX_B_TN)
+
+        query = query.strip()
+        query = normalize_numbers(query)  # handle ordinals like "first" -> "1"
+
+        # Generate base variants for season/episode
+        search_variants = [query]
+        season_match = re.search(r"season\s*(\d+)", query, re.IGNORECASE)
+        episode_match = re.search(r"episode\s*(\d+)", query, re.IGNORECASE)
+
+        if season_match:
+            sn = int(season_match.group(1))
+            search_variants.append(re.sub(r"season\s*\d+", f"S{sn:02d}", query, flags=re.IGNORECASE))
+
+        if episode_match:
+            ep = int(episode_match.group(1))
+            search_variants.append(re.sub(r"episode\s*\d+", f"E{ep:02d}", query, flags=re.IGNORECASE))
+            search_variants.append(re.sub(r"episode\s*\d+", f"EP{ep}", query, flags=re.IGNORECASE))
+            search_variants.append(re.sub(r"episode\s*\d+", f"EP{ep:02d}", query, flags=re.IGNORECASE))
+
+        if season_match and episode_match:
+            sn = int(season_match.group(1))
+            ep = int(episode_match.group(1))
+            search_variants.append(
+                re.sub(r"season\s*\d+\s*episode\s*\d+", f"S{sn:02d}E{ep:02d}", query, flags=re.IGNORECASE)
+            )
+
+        # Expand language keywords
+        expanded_variants = []
+        for q in search_variants:
+            expanded_variants.extend(expand_language_variants(q))
+        search_variants = list(set(expanded_variants))  # remove duplicates
+
+        regex_list = []
+        for q in search_variants:
+            if not q:
+                raw_pattern = "."
+            else:
+                # split into words and require all words in any order
+                words = q.split()
+                raw_pattern = "".join(f"(?=.*{re.escape(w)})" for w in words)
+
+            try:
+                regex_list.append(re.compile(raw_pattern, flags=re.IGNORECASE))
+            except Exception as e:
+                await client.send_message(
+                    ADMIN_ID,
+                    f"⚠️ Regex compile failed\nQuery: `{q}`\nPattern: `{raw_pattern}`\nError: `{e}`"
+                )
+                continue
+
+        if not regex_list:
+            return [], "", 0
+
+        if USE_CAPTION_FILTER:
+            filter = {"$or": [{"file_name": {"$in": regex_list}}, {"caption": {"$in": regex_list}}]}
+        else:
+            filter = {"file_name": {"$in": regex_list}}
+
+        if file_type:
+            filter["file_type"] = file_type
+
+        total_results = await Media.count_documents(filter)
+        next_offset = offset + max_results
+        if next_offset > total_results:
+            next_offset = ""
+
+        cursor = Media.find(filter)
+        cursor.sort("$natural", -1)
+        cursor.skip(offset).limit(max_results)
+        files = await cursor.to_list(length=max_results)
+
+        return files, next_offset, total_results
+
+    except Exception as e:
+        await client.send_message(
+            ADMIN_ID,
+            f"❌ Error in get_search_results\nChat: `{chat_id}`\nQuery: `{query}`\nError: `{e}`"
+        )
+        return [], "", 0
+
+async def get_search_esults(client, chat_id, query, file_type=None, max_results=10, offset=0, filter=False):
     """For given query return (results, next_offset, total_results)"""
 
     try:
