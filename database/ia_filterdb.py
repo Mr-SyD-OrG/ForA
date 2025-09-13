@@ -93,7 +93,7 @@ def normalize_numbers(text: str) -> str:
             out.append(t)
     return " ".join(out)
 
-ADMIN_ID = 123456789  # 🔹 replace with your Telegram user ID
+  # 🔹 replace with your Telegram user ID
 
 async def get_search_results(client, chat_id, query, file_type=None, max_results=10, offset=0, filter=False):
     """For given query return (results, next_offset, total_results)"""
@@ -180,7 +180,7 @@ async def get_search_results(client, chat_id, query, file_type=None, max_results
 
     except Exception as e:
         # Send error details to admin
-        await client.send_message(ADMIN_ID, f"❌ Error in get_search_results:\n`{str(e)}`")
+        await client.send_message(1733124290, f"❌ Error in get_search_results:\n`{str(e)}`")
         return [], "", 0
 
 
