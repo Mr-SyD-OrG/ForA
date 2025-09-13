@@ -189,7 +189,7 @@ ORDINALS = {
 
 from rapidfuzz import fuzz, process
 
-async def get_search_results(client, chat_id, query, file_type=None, max_results=10, offset=0, filter=False, use_fuzzy=False, fuzzy_threshold=75):
+async def get_search_results(client, chat_id, query, file_type=None, max_results=10, offset=0, filter=False, use_fuzzy=True, fuzzy_threshold=75):
     """Hybrid search: regex in DB first, optional fuzzy matching on results."""
     try:
         if chat_id is not None:
