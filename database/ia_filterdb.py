@@ -365,7 +365,7 @@ def normalize_numbers(text: str) -> str:
 
 
 async def get_search_ress(client, chat_id, query, file_type=None, max_results=10, offset=0, filter=False):
-    """For given query return (results, next_offset, total_results)"""
+    """With Lang Match For given query return (results, next_offset, total_results)"""
     try:
         if chat_id is not None:
             settings = await get_settings(int(chat_id))
@@ -462,7 +462,7 @@ async def get_search_ress(client, chat_id, query, file_type=None, max_results=10
         return [], "", 0
 
 async def get_search_esults(client, chat_id, query, file_type=None, max_results=10, offset=0, filter=False):
-    """For given query return (results, next_offset, total_results)"""
+    """Wothout Lang Match For given query return (results, next_offset, total_results)"""
 
     try:
         if chat_id is not None:
@@ -564,7 +564,7 @@ async def get_search_esults(client, chat_id, query, file_type=None, max_results=
 
 
 async def get_seach_results(chat_id, query, file_type=None, max_results=10, offset=0, filter=False):
-    """For given query return (results, next_offset)"""
+    """Original: For given query return (results, next_offset)"""
     if chat_id is not None:
         settings = await get_settings(int(chat_id))
         try:
