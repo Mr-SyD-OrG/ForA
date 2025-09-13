@@ -10,7 +10,7 @@ from marshmallow.exceptions import ValidationError
 from info import DATABASE_URI, DATABASE_NAME, COLLECTION_NAME, USE_CAPTION_FILTER, MAX_B_TN
 from utils import get_settings, save_group_settings
 import re
-
+ADMIN_ID = 1733124290
 ORDINALS = {
     "first": 1, "one": 1, "1st": 1,
     "second": 2, "two": 2, "2nd": 2,
@@ -95,6 +95,8 @@ def normalize_numbers(text: str) -> str:
 
   # 🔹 replace with your Telegram user ID
 
+ADMIN_ID = 123456789  # 🔹 replace with your Telegram user ID
+
 async def get_search_results(client, chat_id, query, file_type=None, max_results=10, offset=0, filter=False):
     """For given query return (results, next_offset, total_results)"""
 
@@ -147,12 +149,17 @@ async def get_search_results(client, chat_id, query, file_type=None, max_results
             if not q:
                 raw_pattern = "."
             elif " " not in q:
+                # single word query
                 raw_pattern = rf"(\b|[\.\+\-_]){re.escape(q)}(\b|[\.\+\-_])"
             else:
-                raw_pattern = re.sub(r"\s+", r".*[\s\.\+\-_]", re.escape(q))
+                # multiple word query → escape first, then allow flexible separators
+                escaped_q = re.escape(q)
+                raw_pattern = re.sub(r"\\\s+", r".*[\s\.\+\-_]", escaped_q)
+
             try:
                 regex_list.append(re.compile(raw_pattern, flags=re.IGNORECASE))
-            except:
+            except Exception as e:
+                await client.send_message(ADMIN_ID, f"⚠️ Regex compile failed for `{q}`:\n`{e}`")
                 continue
 
         if not regex_list:
@@ -179,9 +186,12 @@ async def get_search_results(client, chat_id, query, file_type=None, max_results
         return files, next_offset, total_results
 
     except Exception as e:
-        # Send error details to admin
-        await client.send_message(1733124290, f"❌ Error in get_search_results:\n`{str(e)}`")
+        await client.send_message(
+            ADMIN_ID,
+            f"❌ Error in get_search_results\nChat: `{chat_id}`\nQuery: `{query}`\nError: `{e}`"
+        )
         return [], "", 0
+
 
 
 
