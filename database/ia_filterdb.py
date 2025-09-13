@@ -95,7 +95,7 @@ def normalize_numbers(text: str) -> str:
 
   # 🔹 replace with your Telegram user ID
 
-ADMIN_ID = 123456789  # 🔹 replace with your Telegram user ID
+  # 🔹 replace with your Telegram user ID
 
 async def get_search_results(client, chat_id, query, file_type=None, max_results=10, offset=0, filter=False):
     """For given query return (results, next_offset, total_results)"""
