@@ -174,6 +174,16 @@ async def get_search_results(client, chat_id, query, file_type=None, max_results
             search_variants.append(re.sub(episode_match.re, f"E{ep:02d}", query))
             search_variants.append(re.sub(episode_match.re, f"EP{ep}", query))
             search_variants.append(re.sub(episode_match.re, f"Episode {ep}", query))
+            search_variants.append(re.sub(episode_match.re, f"S01E{ep:02d}", query))
+            search_variants.append(re.sub(episode_match.re, f"S02E{ep:02d}", query))
+            search_variants.append(re.sub(episode_match.re, f"S03E{ep:02d}", query))
+            search_variants.append(re.sub(episode_match.re, f"S04E{ep:02d}", query))
+            search_variants.append(re.sub(episode_match.re, f"S05E{ep:02d}", query))
+            search_variants.append(re.sub(episode_match.re, f"S06E{ep:02d}", query))
+            search_variants.append(re.sub(episode_match.re, f"S1E{ep:02d}", query))
+            search_variants.append(re.sub(episode_match.re, f"S2E{ep:02d}", query))
+            search_variants.append(re.sub(episode_match.re, f"S3E{ep:02d}", query))
+            search_variants.append(re.sub(episode_match.re, f"S4E{ep:02d}", query))
 
         # Expand language keywords
         expanded_variants = []
