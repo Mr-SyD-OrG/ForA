@@ -174,16 +174,9 @@ async def get_search_results(client, chat_id, query, file_type=None, max_results
             search_variants.append(re.sub(episode_match.re, f"E{ep:02d}", query))
             search_variants.append(re.sub(episode_match.re, f"EP{ep}", query))
             search_variants.append(re.sub(episode_match.re, f"Episode {ep}", query))
-            search_variants.append(re.sub(episode_match.re, f"S01E{ep:02d}", query))
-            search_variants.append(re.sub(episode_match.re, f"S02E{ep:02d}", query))
-            search_variants.append(re.sub(episode_match.re, f"S03E{ep:02d}", query))
-            search_variants.append(re.sub(episode_match.re, f"S04E{ep:02d}", query))
-            search_variants.append(re.sub(episode_match.re, f"S05E{ep:02d}", query))
-            search_variants.append(re.sub(episode_match.re, f"S06E{ep:02d}", query))
-            search_variants.append(re.sub(episode_match.re, f"S1E{ep:02d}", query))
-            search_variants.append(re.sub(episode_match.re, f"S2E{ep:02d}", query))
-            search_variants.append(re.sub(episode_match.re, f"S3E{ep:02d}", query))
-            search_variants.append(re.sub(episode_match.re, f"S4E{ep:02d}", query))
+            for syd in range(1, 9):  # for seasons 1 to 10
+                search_variants.append(re.sub(episode_match.re, f"S{syd:02d}E{ep:02d}", query))
+                search_variants.append(re.sub(episode_match.re, f"S{syd}E{ep}", query))
 
         # Expand language keywords
         expanded_variants = []
