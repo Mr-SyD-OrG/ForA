@@ -179,6 +179,7 @@ async def get_search_results(client, chat_id, query, file_type=None, max_results
                 search_variants.append(re.sub(episode_match.re, f"S{syd}E{ep}", query))
 
         # Expand language keywords
+        search_variants.append(re.sub("&", "and", query))
         expanded_variants = []
         for q in search_variants:
             expanded_variants.extend(expand_language_variants(q))
