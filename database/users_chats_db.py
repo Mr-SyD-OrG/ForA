@@ -144,7 +144,7 @@ class Database:
         async for doc in cursor:
             # Remove expired word
             if "expireAt" in doc and doc["expireAt"] < now:
-                await self.words.delete_one({"_id": doc["_id"]})
+                await self.words.delete_one({"word": doc["word"]})
                 continue
             if doc["word"] in text:
                 return True
