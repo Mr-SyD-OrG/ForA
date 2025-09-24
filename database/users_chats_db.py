@@ -139,10 +139,11 @@ class Database:
 
     async def check_word_exists(self, text: str):
         text = text.lower()
-        now = datetime.datetime.now(pytz.timezone("Asia/Kolkata"))
+        now = datetime.now(pytz.timezone("Asia/Kolkata")).replace(tzinfo=None)
         cursor = self.words.find({})
         async for doc in cursor:
             # Remove expired word
+            
             if "expireAt" in doc and doc["expireAt"] < now:
                 await self.words.delete_one({"word": doc["word"]})
                 continue
