@@ -126,20 +126,29 @@ class Database:
         return b_users, b_chats
     
 
-    async def add_word(self, phrase: str, expire_at: str = None):
+    async def add_word(self, phrase: str, expire_text: str):
         phrase = phrase.lower().strip()
-        if await self.words.find_one({"word": phrase}):
-            return False
-
-        doc = {"word": phrase}
-        if expire_at:
-            expire_time = dateparser.parse(expire_at)
-            if not expire_time:
-                return "invalid_date"
-            doc["expireAt"] = expire_time
-
-        await self.words.insert_one(doc)
+        expire_time = dateparser.parse(expire_text)
+        if not expire_time:
+            return "invalid_date"
+        await self.words.insert_one({
+            "word": phrase,
+            "expireAt": expire_time
+        })
         return True
+
+    async def check_word_exists(self, text: str):
+        text = text.lower()
+        now = datetime.now(pytz.timezone("Asia/Kolkata"))
+        cursor = self.words.find({})
+        async for doc in cursor:
+            # Remove expired word
+            if "expireAt" in doc and doc["expireAt"] < now:
+                await self.words.delete_one({"_id": doc["_id"]})
+                continue
+            if doc["word"] in text:
+                return True
+        return False
 
 
     async def get_all_words(self):
@@ -149,16 +158,6 @@ class Database:
     async def delete_word(self, word: str):
         result = await self.words.delete_one({"word": word.lower().strip()})
         return result.deleted_count > 0
-
-    async def check_word_exists(self, text: str):
-        text = text.lower()
-        cursor = self.words.find({})
-        async for doc in cursor:
-            word = doc["word"]
-            # exact word or phrase match inside text
-            if re.search(rf"\b{re.escape(word)}\b", text):
-                return True
-        return False
 
     async def add_chat(self, chat, title):
         chat = self.new_group(chat, title)
