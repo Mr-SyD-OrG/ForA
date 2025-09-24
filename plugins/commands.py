@@ -1272,49 +1272,39 @@ import dateparser
 
 @Client.on_message(filters.command("addword") & filters.private)
 async def addword(client, message):
-    if len(message.text.split()) < 2:
-        return await message.reply("⚠️ Usage: /addword <words> expire: <expire>")
+    try:
+        text = message.text.split(" ", 1)[1]  # remove command
+    except IndexError:
+        return await message.reply("⚠️ Usage: /addword <words> expire: <YYYY-MM-DD HH:MM>")
+    
+    if " expire: " not in text.lower():
+        return await message.reply("⚠️ Usage: /addword <words> expire: <YYYY-MM-DD HH:MM>")
 
-    # Remove command
-    cmd_text = message.text[len("/addword"):].strip()
-
-    # Try to detect expire date
-    expire_at = None
-    phrase = cmd_text
-    match = re.search(r"expire:\s*(.+)$", cmd_text, re.IGNORECASE)
-    if match:
-        expire_str = match.group(1).strip()
-        parsed_date = dateparser.parse(expire_str)
-        if not parsed_date:
-            return await message.reply("⚠️ Invalid date format. Use `YYYY-MM-DD` or natural language like `June 30`.")
-        expire_at = parsed_date
-        phrase = cmd_text[:match.start()].strip()
-
-    if not phrase:
-        return await message.reply("⚠️ No phrase provided.")
-
-    result = await db.add_word(phrase, expire_at)
-
-    if result is False:
-        return await message.reply(f"⚠️ Already exists: `{phrase}`")
-
-    reply_text = f"✅ Word added: `{phrase}`"
-    if expire_at:
-        reply_text += f" (expires {expire_at.strftime('%Y-%m-%d %H:%M')})"
-
-    await message.reply(reply_text)
+    phrase_part, expire_part = text.lower().split(" expire: ", 1)
+    phrase = phrase_part.strip()
+    expire_text = expire_part.strip()
+    
+    result = await db.add_word(phrase, expire_text)
+    if result == "invalid_date":
+        await message.reply("⚠️ Invalid date format. Use YYYY-MM-DD HH:MM")
+    else:
+        await message.reply(f"✅ Word added: `{phrase}` (expires {expire_text})")
 
 
 @Client.on_message(filters.command("delword") & filters.private)
 async def delword(client, message):
     if len(message.command) < 2:
-        return await message.reply("⚠️ Usage: /delword <word>")
-    word = message.command[1]
+        return await message.reply("⚠️ Usage: /delword <word or phrase>")
+    
+    # Join all parts after the command as the word/phrase
+    word = " ".join(message.command[1:]).strip().lower()
+    
     ok = await db.delete_word(word)
     if ok:
         await message.reply(f"🗑️ Deleted: `{word}`")
     else:
         await message.reply(f"⚠️ Not found: `{word}`")
+
 
 @Client.on_message(filters.command("listwords") & filters.private)
 async def listwords(client, message):
@@ -1322,7 +1312,13 @@ async def listwords(client, message):
     if not words:
         return await message.reply("📭 No words stored.")
     await message.reply("📌 Stored words:\n" + "\n".join(f"- `{w}`" for w in words))
-    
+
+
+@Client.on_message(filters.command("clearwords") & filters.private)
+async def clearwords(client, message):
+    result = await db.words.delete_many({})
+    await message.reply(f"🗑️ All words deleted. Total removed: {result.deleted_count}")
+
 @Client.on_message(filters.command("restart") & filters.user(ADMINS))
 async def stop_button(bot, message):
     msg = await bot.send_message(text="<b><i>ʙᴏᴛ ɪꜱ ʀᴇꜱᴛᴀʀᴛɪɴɢ</i></b>", chat_id=message.chat.id)       
