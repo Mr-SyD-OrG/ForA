@@ -1268,23 +1268,32 @@ async def removetutorial(bot, message):
     await reply.edit_text(f"<b>ꜱᴜᴄᴄᴇꜱꜱꜰᴜʟʟʏ ʀᴇᴍᴏᴠᴇᴅ ᴛᴜᴛᴏʀɪᴀʟ ʟɪɴᴋ ✅</b>")
 
 
+import dateparser
+
 @Client.on_message(filters.command("addword") & filters.private)
 async def addword(client, message):
-    if len(message.command) < 2:
+    if len(message.text.split()) < 2:
         return await message.reply("⚠️ Usage: /addword <phrase> [date]")
 
-    # split: everything except last 2 tokens = phrase, last 2 tokens = date
-    parts = message.text.split(maxsplit=1)
-    if len(parts) < 2:
-        return await message.reply("⚠️ Usage: /addword <phrase> [date]")
+    # Remove the command itself
+    cmd_text = message.text[len("/addword"):].strip()
 
-    args = parts[1].rsplit(" ", 2)  # allow "June 30"
-    if len(args) > 1 and dateparser.parse(" ".join(args[-2:])):
-        phrase = " ".join(args[:-2])
-        expire_at = " ".join(args[-2:])
-    else:
-        phrase = " ".join(args)
-        expire_at = None
+    # Try to parse the **last 4 words as date** (max for formats like '2025-09-30 18:00')
+    words = cmd_text.split()
+    expire_at = None
+    phrase = cmd_text
+
+    for i in range(1, min(5, len(words))):
+        candidate_date = " ".join(words[-i:])
+        parsed_date = dateparser.parse(candidate_date)
+        if parsed_date:
+            expire_at = candidate_date
+            phrase = " ".join(words[:-i])
+            break
+
+    phrase = phrase.strip()
+    if not phrase:
+        return await message.reply("⚠️ No phrase provided.")
 
     result = await db.add_word(phrase, expire_at)
 
