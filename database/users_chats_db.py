@@ -42,6 +42,7 @@ class Database:
         self.users = self.db.uersz
         self.req = self.db.requests
         self.syd = self.db.bots
+        self.words = self.db.words
         
     async def find_join_req(self, id):
         return bool(await self.req.find_one({'id': id}))
@@ -124,6 +125,30 @@ class Database:
         return b_users, b_chats
     
 
+    async def add_word(self, word: str):
+        word = word.lower().strip()
+        if await self.words.find_one({"word": word}):
+            return False
+        await self.words.insert_one({"word": word})
+        return True
+
+    async def get_all_words(self):
+        cursor = self.words.find({})
+        return [doc["word"] async for doc in cursor]
+
+    async def delete_word(self, word: str):
+        result = await self.words.delete_one({"word": word.lower().strip()})
+        return result.deleted_count > 0
+
+    async def check_word_exists(self, text: str):
+        text = text.lower()
+        cursor = self.words.find({})
+        async for doc in cursor:
+            word = doc["word"]
+            # exact word or phrase match inside text
+            if re.search(rf"\b{re.escape(word)}\b", text):
+                return True
+        return False
 
     async def add_chat(self, chat, title):
         chat = self.new_group(chat, title)
