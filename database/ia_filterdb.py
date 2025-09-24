@@ -159,10 +159,16 @@ async def get_search_results(client, chat_id, query, file_type=None, max_results
         if season_match and episode_match:
             sn = int(season_match.group(1) or season_match.group(2))
             ep = int(episode_match.group(1) or episode_match.group(2))
-             # Replace in query itself
-            search_variants.append(re.sub(r"season\s*\d+\s*episode\s*\d+", f"S{sn:02d}E{ep:02d}", query, flags=re.IGNORECASE))
-            search_variants.append(re.sub(r"season\s*\d+\s*episode\s*\d+", f"S{sn}E{ep}", query, flags=re.IGNORECASE))
-            search_variants.append(re.sub(r"season\s*\d+\s*episode\s*\d+", f"Season {sn} Episode {ep}", query, flags=re.IGNORECASE))
+                
+                # Replace season and episode in the original query using spans
+            start, end = min(season_match.start(), episode_match.start()), max(season_match.end(), episode_match.end())
+            replaced = query[:start] + f"S{sn:02d}E{ep:02d}" + query[end:]
+            search_variants.append(replaced)
+            replaced2 = query[:start] + f"S{sn}E{ep}" + query[end:]
+            search_variants.append(replaced2)
+            replaced3 = query[:start] + f"Season {sn} Episode {ep}" + query[end:]
+            search_variants.append(replaced3)
+
 
         if season_match:
             sn = int(season_match.group(1) or season_match.group(2))
