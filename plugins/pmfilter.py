@@ -2295,7 +2295,7 @@ async def auto_filter(client, msg, spoll=False):
     # reqstr1 = msg.from_user.id if msg.from_user else 0
     # reqstr = await client.get_users(reqstr1)
     if await db.check_word_exists(msg.text):
-        await message.reply("Oᴛᴛ ɴᴏᴛ ʀᴇʟᴇᴀꜱᴇᴅ!")
+        await msg.reply("Oᴛᴛ ɴᴏᴛ ʀᴇʟᴇᴀꜱᴇᴅ!")
     if not spoll:
         message = msg
         if message.text.startswith("t.me/"): return
