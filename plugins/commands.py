@@ -1273,40 +1273,36 @@ import dateparser
 @Client.on_message(filters.command("addword") & filters.private)
 async def addword(client, message):
     if len(message.text.split()) < 2:
-        return await message.reply("⚠️ Usage: /addword <phrase> [date]")
+        return await message.reply("⚠️ Usage: /addword <words> expire: <expire>")
 
-    # Remove the command itself
+    # Remove command
     cmd_text = message.text[len("/addword"):].strip()
 
-    # Try to parse the **last 4 words as date** (max for formats like '2025-09-30 18:00')
-    words = cmd_text.split()
+    # Try to detect expire date
     expire_at = None
     phrase = cmd_text
+    match = re.search(r"expire:\s*(.+)$", cmd_text, re.IGNORECASE)
+    if match:
+        expire_str = match.group(1).strip()
+        parsed_date = dateparser.parse(expire_str)
+        if not parsed_date:
+            return await message.reply("⚠️ Invalid date format. Use `YYYY-MM-DD` or natural language like `June 30`.")
+        expire_at = parsed_date
+        phrase = cmd_text[:match.start()].strip()
 
-    for i in range(1, min(5, len(words))):
-        candidate_date = " ".join(words[-i:])
-        parsed_date = dateparser.parse(candidate_date)
-        if parsed_date:
-            expire_at = candidate_date
-            phrase = " ".join(words[:-i])
-            break
-
-    phrase = phrase.strip()
     if not phrase:
         return await message.reply("⚠️ No phrase provided.")
 
     result = await db.add_word(phrase, expire_at)
 
-    if result == "invalid_date":
-        return await message.reply("⚠️ Invalid date format. Try `June 30` or `2025-09-30 18:00`")
+    if result is False:
+        return await message.reply(f"⚠️ Already exists: `{phrase}`")
 
-    if result:
-        if expire_at:
-            await message.reply(f"✅ Word added: `{phrase}` (expires {expire_at})")
-        else:
-            await message.reply(f"✅ Word added: `{phrase}` (permanent)")
-    else:
-        await message.reply(f"⚠️ Already exists: `{phrase}`")
+    reply_text = f"✅ Word added: `{phrase}`"
+    if expire_at:
+        reply_text += f" (expires {expire_at.strftime('%Y-%m-%d %H:%M')})"
+
+    await message.reply(reply_text)
 
 
 @Client.on_message(filters.command("delword") & filters.private)
