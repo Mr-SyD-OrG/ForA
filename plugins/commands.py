@@ -1271,13 +1271,33 @@ async def removetutorial(bot, message):
 @Client.on_message(filters.command("addword") & filters.private)
 async def addword(client, message):
     if len(message.command) < 2:
-        return await message.reply("⚠️ Usage: /addword <word>")
-    word = message.command[1]
-    ok = await db.add_word(word)
-    if ok:
-        await message.reply(f"✅ Word added: `{word}`")
+        return await message.reply("⚠️ Usage: /addword <phrase> [date]")
+
+    # split: everything except last 2 tokens = phrase, last 2 tokens = date
+    parts = message.text.split(maxsplit=1)
+    if len(parts) < 2:
+        return await message.reply("⚠️ Usage: /addword <phrase> [date]")
+
+    args = parts[1].rsplit(" ", 2)  # allow "June 30"
+    if len(args) > 1 and dateparser.parse(" ".join(args[-2:])):
+        phrase = " ".join(args[:-2])
+        expire_at = " ".join(args[-2:])
     else:
-        await message.reply(f"⚠️ Already exists: `{word}`")
+        phrase = " ".join(args)
+        expire_at = None
+
+    result = await db.add_word(phrase, expire_at)
+
+    if result == "invalid_date":
+        return await message.reply("⚠️ Invalid date format. Try `June 30` or `2025-09-30 18:00`")
+
+    if result:
+        if expire_at:
+            await message.reply(f"✅ Word added: `{phrase}` (expires {expire_at})")
+        else:
+            await message.reply(f"✅ Word added: `{phrase}` (permanent)")
+    else:
+        await message.reply(f"⚠️ Already exists: `{phrase}`")
 
 
 @Client.on_message(filters.command("delword") & filters.private)
