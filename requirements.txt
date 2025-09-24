@@ -10,7 +10,8 @@
  shortzy 
  datetime 
  pytz 
- 
+ dateparser
+
  aiohttp==3.8.3
  googletrans==3.1.0a0
 
