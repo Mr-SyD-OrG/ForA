@@ -1267,9 +1267,42 @@ async def removetutorial(bot, message):
     await save_group_settings(grpid, 'is_tutorial', False)
     await reply.edit_text(f"<b>ꜱᴜᴄᴄᴇꜱꜱꜰᴜʟʟʏ ʀᴇᴍᴏᴠᴇᴅ ᴛᴜᴛᴏʀɪᴀʟ ʟɪɴᴋ ✅</b>")
 
+
+@Client.on_message(filters.command("addword") & filters.private)
+async def addword(client, message):
+    if len(message.command) < 2:
+        return await message.reply("⚠️ Usage: /addword <word>")
+    word = message.command[1]
+    ok = await db.add_word(word)
+    if ok:
+        await message.reply(f"✅ Word added: `{word}`")
+    else:
+        await message.reply(f"⚠️ Already exists: `{word}`")
+
+
+@Client.on_message(filters.command("delword") & filters.private)
+async def delword(client, message):
+    if len(message.command) < 2:
+        return await message.reply("⚠️ Usage: /delword <word>")
+    word = message.command[1]
+    ok = await db.delete_word(word)
+    if ok:
+        await message.reply(f"🗑️ Deleted: `{word}`")
+    else:
+        await message.reply(f"⚠️ Not found: `{word}`")
+
+@Client.on_message(filters.command("listwords") & filters.private)
+async def listwords(client, message):
+    words = await db.get_all_words()
+    if not words:
+        return await message.reply("📭 No words stored.")
+    await message.reply("📌 Stored words:\n" + "\n".join(f"- `{w}`" for w in words))
+    
 @Client.on_message(filters.command("restart") & filters.user(ADMINS))
 async def stop_button(bot, message):
     msg = await bot.send_message(text="<b><i>ʙᴏᴛ ɪꜱ ʀᴇꜱᴛᴀʀᴛɪɴɢ</i></b>", chat_id=message.chat.id)       
     await asyncio.sleep(3)
     await msg.edit("<b><i><u>ʙᴏᴛ ɪꜱ ʀᴇꜱᴛᴀʀᴛᴇᴅ</u> ✅</i></b>")
     os.execl(sys.executable, sys.executable, *sys.argv)
+
+
