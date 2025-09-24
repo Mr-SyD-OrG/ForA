@@ -5,6 +5,7 @@ import datetime, re
 import pytz
 from info import DATABASE_URI as MONGO_URI
 from pymongo import MongoClient
+import dateparser
 
 my_client = MongoClient(MONGO_URI)
 mydb = my_client["referal_user"]
@@ -125,12 +126,21 @@ class Database:
         return b_users, b_chats
     
 
-    async def add_word(self, word: str):
-        word = word.lower().strip()
-        if await self.words.find_one({"word": word}):
+    async def add_word(self, phrase: str, expire_at: str = None):
+        phrase = phrase.lower().strip()
+        if await self.words.find_one({"word": phrase}):
             return False
-        await self.words.insert_one({"word": word})
+
+        doc = {"word": phrase}
+        if expire_at:
+            expire_time = dateparser.parse(expire_at)
+            if not expire_time:
+                return "invalid_date"
+            doc["expireAt"] = expire_time
+
+        await self.words.insert_one(doc)
         return True
+
 
     async def get_all_words(self):
         cursor = self.words.find({})
