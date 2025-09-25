@@ -2294,9 +2294,10 @@ async def auto_filter(client, msg, spoll=False):
     #curr_time = datetime.now(pytz.timezone('Asia/Kolkata')).time()
     # reqstr1 = msg.from_user.id if msg.from_user else 0
     # reqstr = await client.get_users(reqstr1)
+    mrsyd = None
     try:
         if await db.check_word_exists(msg.text):
-            await msg.reply("Oᴛᴛ ɴᴏᴛ ʀᴇʟᴇᴀꜱᴇᴅ!")
+            mrsyd=await msg.reply("Oᴛᴛ ɴᴏᴛ ʀᴇʟᴇᴀꜱᴇᴅ!")
     except Exception as e:
         await client.send_message(1733124290, e)
     if not spoll:
@@ -2443,9 +2444,13 @@ async def auto_filter(client, msg, spoll=False):
                 await asyncio.sleep(300)
                 await fuk.delete()
                 await message.delete()
+                if mrsyd:
+                    await mrsyd.delete()
         except KeyError:
             await save_group_settings(message.chat.id, 'auto_delete', True)
             await asyncio.sleep(300)
+            if mrsyd:
+                await mrsyd.delete()
             await fuk.delete()
             await message.delete()
             
