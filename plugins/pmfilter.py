@@ -2333,7 +2333,11 @@ async def auto_filter(client, msg, spoll=False):
             if not files:
                 await m.delete()
                 if settings["spell_check"]:
-                    return await advantage_spell_chok(client, msg)
+                    await advantage_spell_chok(client, msg)
+                    if mrsyd:
+                        await asyncio.sleep(60)
+                        await mrsyd.delete()
+                    return
                 else:
                     if mrsyd:
                         await asyncio.sleep(60)
