@@ -2336,6 +2336,7 @@ async def auto_filter(client, msg, spoll=False):
                     return await advantage_spell_chok(client, msg)
                 else:
                     if mrsyd:
+                        await asyncio.sleep(60)
                         await mrsyd.delete()
                     
                     # if NO_RESULTS_MSG:
@@ -2343,6 +2344,7 @@ async def auto_filter(client, msg, spoll=False):
                     return
         else:
             if mrsyd:
+                await asyncio.sleep(60)
                 await mrsyd.delete()
             return
     else:
