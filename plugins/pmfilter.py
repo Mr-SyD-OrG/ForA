@@ -2335,11 +2335,15 @@ async def auto_filter(client, msg, spoll=False):
                 if settings["spell_check"]:
                     return await advantage_spell_chok(client, msg)
                 else:
+                    if mrsyd:
+                        await mrsyd.delete()
                     
                     # if NO_RESULTS_MSG:
                     #     await client.send_message(chat_id=LOG_CHANNEL, text=(script.NORSLTS.format(reqstr.id, reqstr.mention, search)))
                     return
         else:
+            if mrsyd:
+                await mrsyd.delete()
             return
     else:
         message = msg.message.reply_to_message  # msg will be callback query
