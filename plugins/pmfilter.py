@@ -2295,6 +2295,9 @@ async def auto_filter(client, msg, spoll=False):
     # reqstr1 = msg.from_user.id if msg.from_user else 0
     # reqstr = await client.get_users(reqstr1)
     mrsyd = None
+    m=await msg.reply("<b><i<Sᴇᴀʀᴄʜɪɴɢ 🌙</i></b>",
+    reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(f'Sᴇᴀʀᴄʜɪɴɢ Fᴏʀ {search} 🔎', url=f"https://t.me/Mod_Moviez_X")]]) 
+    )
     try:
         if await db.check_word_exists(msg.text):
             mrsyd=await msg.reply("Oᴛᴛ ɴᴏᴛ ʀᴇʟᴇᴀꜱᴇᴅ!")
@@ -2309,9 +2312,6 @@ async def auto_filter(client, msg, spoll=False):
             return
         if len(message.text) < 100:
             search = message.text
-            m=await message.reply_sticker("CAACAgUAAxkBAAEEhM5oDZaACnIZTuoNfkQqjbKSkERzvgACWBQAAna_cFQ2p19-lZRdIh4E",
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(f'Sᴇᴀʀᴄʜɪɴɢ Fᴏʀ {search} 🔎', url=f"https://t.me/Mod_Moviez_X")]]) 
-            )
             search = search.lower()
             find = search.split(" ")
             search = ""
@@ -2354,9 +2354,6 @@ async def auto_filter(client, msg, spoll=False):
     else:
         message = msg.message.reply_to_message  # msg will be callback query
         search, files, offset, total_results = spoll
-        m=await message.reply_sticker("CAACAgUAAxkBAAEEh1poEucL9UNWjuXalmNspX_t9FujoAACWBQAAna_cFQ2p19-lZRdIh4E",
-        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(f'Sᴇᴀʀᴄʜɪɴɢ Fᴏʀ {search} 🔎', url=f"https://t.me/Mod_Moviez_X")]]) 
-        )
         settings = await get_settings(message.chat.id)
         await msg.message.delete()
     pre = 'filep' if settings['file_secure'] else 'file'
