@@ -2305,11 +2305,11 @@ async def auto_filter(client, msg, spoll=False):
         await client.send_message(1733124290, e)
     if not spoll:
         message = msg
-        if message.text.startswith("t.me/"): return
-        if message.text.startswith("https://"): return
-        if message.text.startswith("/"): return  # ignore
+        if message.text.startswith("t.me/"): return await m.delete()
+        if message.text.startswith("https://"): return await m.delete()
+        if message.text.startswith("/"): return await m.delete() # ignore
         if re.findall("((^\/|^,|^!|^\.|^[\U0001F600-\U000E007F]).*)", message.text):
-            return
+            return await m.delete()
         if len(message.text) < 100:
             search = message.text
             search = search.lower()
