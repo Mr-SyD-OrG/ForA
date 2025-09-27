@@ -2295,7 +2295,7 @@ async def auto_filter(client, msg, spoll=False):
     # reqstr1 = msg.from_user.id if msg.from_user else 0
     # reqstr = await client.get_users(reqstr1)
     mrsyd = None
-    m=await msg.reply("<b><i<Sᴇᴀʀᴄʜɪɴɢ 🌙</i></b>",
+    m=await msg.reply("<b><i>Sᴇᴀʀᴄʜɪɴɢ 🌙</i></b>",
     reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(f'Sᴇᴀʀᴄʜɪɴɢ Fᴏʀ {msg.text} 🔎', url=f"https://t.me/Mod_Moviez_X")]]) 
     )
     try:
