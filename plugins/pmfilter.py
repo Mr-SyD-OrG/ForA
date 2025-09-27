@@ -77,6 +77,7 @@ async def get_shortlink(url):
 async def give_filter(client, message):
     if re.search(r'(?im)(?:https?://|www\.|t\.me/|telegram\.dog/)\S+|@[a-z0-9_]{5,32}\b', message.text):
         return
+    if message.text.startswith("/"): return
     if message.chat.id != SUPPORT_CHAT_ID:
         manual = await manual_filters(client, message)
         if manual == False:
