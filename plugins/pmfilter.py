@@ -2294,9 +2294,9 @@ def clean_text(text: str) -> str:
 
 def format_button_name(file_name: str) -> str:
     # Detect season, episode, or compact match
-    season_match = re.search(r"\b(?:season\s*(\d{1,2})|s0*(\d{1,2}))\b", query, re.IGNORECASE)
-    episode_match = re.search(r"\b(?:episode\s*(\d{1,3})|e[p]?0*(\d{1,3}))\b", query, re.IGNORECASE)
-    compact_match = re.search(r"\bS0*(\d{1,2})[\s._-]*E[P]?0*(\d{1,3})\b", query, re.IGNORECASE)
+    season_match = re.search(r"\b(?:season\s*(\d{1,2})|s0*(\d{1,2}))\b", file_name, re.IGNORECASE)
+    episode_match = re.search(r"\b(?:episode\s*(\d{1,3})|e[p]?0*(\d{1,3}))\b", file_name, re.IGNORECASE)
+    compact_match = re.search(r"\bS0*(\d{1,2})[\s._-]*E[P]?0*(\d{1,3})\b", file_name, re.IGNORECASE)
 
     sn, ep = None, None
 
@@ -2312,8 +2312,7 @@ def format_button_name(file_name: str) -> str:
     # Clean existing season/episode markers from file name
     cleaned_name = re.sub(r"(?i)(season\s*\d+|s\d+\s*e\d+|episode\s*\d+|e\d+)", "", file_name)
     cleaned_name = re.sub(r"\s+", " ", cleaned_name).strip()
-    parts = cleaned_name.split()
-    parts = [p for p in parts if not (p.startswith("[") or p.startswith("@") or p.startswith("www."))]
+    parts = [p for p in cleaned_name.split() if not (p.startswith("[") or p.startswith("@") or p.startswith("www."))]
     
     # Prepend SxxExx if available
     if sn and ep:
