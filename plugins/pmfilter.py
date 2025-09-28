@@ -152,7 +152,7 @@ async def next_page(bot, query):
         btn = [
             [
                 InlineKeyboardButton(
-                    text=f"{get_size(file.file_size)} ▷ {' '.join(filter(lambda x: not x.startswith('[') and not x.startswith('@') and not x.startswith('www.'), format_button_name(file.file_name).split()))}", callback_data=f'{pre}#{file.file_id}'
+                    text=f"{get_size(file.file_size)} ▷ {format_button_name(file.file_name)}", callback_data=f'{pre}#{file.file_id}'
                 ),
             ]
             for file in files
@@ -383,7 +383,7 @@ async def filter_qualities_cb_handler(client: Client, query: CallbackQuery):
 
     files, offset, total_results = await get_search_results(client, chat_id, search, offset=0, filter=True)
     if not files:
-        await query.answer("🚫 ɴᴏ ꜰɪʟᴇꜱ ᴡᴇʀᴇ ꜰᴏᴜɴᴅ 🚫 ʀᴇᴩᴏʀᴛ ᴛᴏ ᴛɢᴇ ᴀᴅᴍɪɴ.. 💥", show_alert=1)
+        await query.answer("🚫 Nᴏ ꜰɪʟᴇꜱ ᴡᴇʀᴇ ꜰᴏᴜɴᴅ 🚫 \nRᴇᴩᴏʀᴛ ɪᴛ ᴛᴏ ᴛʜᴇ ᴏᴡɴᴇʀ ᴩʟᴇᴀꜱᴇ.", show_alert=1)
         return
     temp.GETALL[key] = files
     settings = await get_settings(message.chat.id)
@@ -392,7 +392,7 @@ async def filter_qualities_cb_handler(client: Client, query: CallbackQuery):
         btn = [
             [
                 InlineKeyboardButton(
-                    text=f"{get_size(file.file_size)} ▷ {' '.join(filter(lambda x: not x.startswith('[') and not x.startswith('@') and not x.startswith('www.'), format_button_name(file.file_name).split()))}", callback_data=f'{pre}#{file.file_id}'
+                    text=f"{get_size(file.file_size)} ▷ {format_button_name(file.file_name)}", callback_data=f'{pre}#{file.file_id}'
                 ),
             ]
             for file in files
@@ -546,7 +546,7 @@ async def filter_languages_cb_handler(client: Client, query: CallbackQuery):
 
     files, offset, total_results = await get_search_results(client, chat_id, search, offset=0, filter=True)
     if not files:
-        await query.answer("🚫Sᴏʀʀʏ ɴᴏ ꜰɪʟᴇꜱ ᴡᴇʀᴇ ꜰᴏᴜɴᴅ 🚫 ʀᴇᴩᴏʀᴛ ᴛᴏ ᴛʜᴇ ᴏᴡɴᴇʀ..ɪᴍᴍᴇᴅɪᴀᴛᴇʟʏ.. 💥", show_alert=1)
+        await query.answer("🚫 Nᴏ ꜰɪʟᴇꜱ ᴡᴇʀᴇ ꜰᴏᴜɴᴅ 🚫 \nRᴇᴩᴏʀᴛ ɪᴛ ᴛᴏ ᴛʜᴇ ᴏᴡɴᴇʀ ᴩʟᴇᴀꜱᴇ ɪꜰ ʏᴏᴜ ᴀʀᴇ ꜱᴜʀᴇ ᴛʜᴀᴛ, ᴛʜᴇ ᴍᴏᴠɪᴇ/ꜱᴇʀɪᴇꜱ ɪꜱ ᴅᴜʙʙᴇᴅ", show_alert=1)
         return
     temp.GETALL[key] = files
     settings = await get_settings(message.chat.id)
@@ -555,7 +555,7 @@ async def filter_languages_cb_handler(client: Client, query: CallbackQuery):
         btn = [
             [
                 InlineKeyboardButton(
-                    text=f"{get_size(file.file_size)} ▷ {' '.join(filter(lambda x: not x.startswith('[') and not x.startswith('@') and not x.startswith('www.'), format_button_name(file.file_name).split()))}", callback_data=f'{pre}#{file.file_id}'
+                    text=f"{get_size(file.file_size)} ▷ {format_button_name(file.file_name)}", callback_data=f'{pre}#{file.file_id}'
                 ),
             ]
             for file in files
@@ -739,7 +739,7 @@ async def filter_seasons_cb_handler(client: Client, query: CallbackQuery):
         files.extend(files2)
         
     if not files:
-        await query.answer("🚫 Nᴏ ꜰɪʟᴇꜱ ᴡᴇʀᴇ ꜰᴏᴜɴᴅ 🚫 Rᴇᴩᴏʀᴛ ᴛᴏ ᴏᴡɴᴇʀ ᴩʟᴇᴀꜱᴇ.. ⚡", show_alert=1)
+        await query.answer("🚫 Nᴏ ꜰɪʟᴇꜱ ᴡᴇʀᴇ ꜰᴏᴜɴᴅ 🚫 \nRᴇᴩᴏʀᴛ ɪᴛ ᴛᴏ ᴛʜᴇ ᴏᴡɴᴇʀ ᴩʟᴇᴀꜱᴇ ɪꜰ ʏᴏᴜ ᴀʀᴇ ꜱᴜʀᴇ ᴛʜᴀᴛ, ᴛʜᴇ ꜱᴇᴀꜱᴏɴ ɪꜱ ʀᴇʟᴇᴀꜱᴇᴅ", show_alert=1)
         return
     temp.GETALL[key] = files
     settings = await get_settings(message.chat.id)
@@ -748,7 +748,7 @@ async def filter_seasons_cb_handler(client: Client, query: CallbackQuery):
         btn = [
             [
                 InlineKeyboardButton(
-                    text=f"{get_size(file.file_size)} ▷ {' '.join(filter(lambda x: not x.startswith('[') and not x.startswith('@') and not x.startswith('www.'), format_button_name(file.file_name).split()))}", callback_data=f'{pre}#{file.file_id}'
+                    text=f"{get_size(file.file_size)} ▷ {format_button_name(file.file_name)}", callback_data=f'{pre}#{file.file_id}'
                 ),
             ]
             for file in files
@@ -2329,7 +2329,7 @@ async def auto_filter(client, msg, spoll=False):
     # reqstr1 = msg.from_user.id if msg.from_user else 0
     # reqstr = await client.get_users(reqstr1)
     mrsyd = None
-    m=await msg.reply("<b><i>Sᴇᴀʀᴄʜɪɴɢ 🌙</i></b>",
+    m=await msg.reply("<b>Sᴇᴀʀᴄʜɪɴɢ 🌙<</b>",
     reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(f'Sᴇᴀʀᴄʜɪɴɢ Fᴏʀ {msg.text} 🔎', url=f"https://t.me/Mod_Moviez_X")]]) 
     )
     try:
