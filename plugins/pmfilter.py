@@ -2312,16 +2312,18 @@ def format_button_name(file_name: str) -> str:
     # Clean existing season/episode markers from file name
     cleaned_name = re.sub(r"(?i)(season\s*\d+|s\d+\s*e\d+|episode\s*\d+|e\d+)", "", file_name)
     cleaned_name = re.sub(r"\s+", " ", cleaned_name).strip()
-
+    parts = cleaned_name.split()
+    parts = [p for p in parts if not (p.startswith("[") or p.startswith("@") or p.startswith("www."))]
+    
     # Prepend SxxExx if available
     if sn and ep:
-        return f"S{sn:02d}E{ep:02d} ▷ {cleaned_name}"
+        return f"S{sn:02d}E{ep:02d} ▷ {' '.join(parts)}"
     elif sn:
-        return f"S{sn:02d} ▷ {cleaned_name}"
+        return f"S{sn:02d} ▷ {' '.join(parts)}"
     elif ep:
-        return f"E{ep:02d} ▷ {cleaned_name}"
+        return f"E{ep:02d} ▷ {' '.join(parts)}"
     else:
-        return cleaned_name
+        return " ".join(parts)
 
 async def auto_filter(client, msg, spoll=False):
     #curr_time = datetime.now(pytz.timezone('Asia/Kolkata')).time()
@@ -2398,7 +2400,7 @@ async def auto_filter(client, msg, spoll=False):
         btn = [
             [
                 InlineKeyboardButton(
-                    text=f"{get_size(file.file_size)} ▷ {' '.join(filter(lambda x: not x.startswith('[') and not x.startswith('@') and not x.startswith('www.'), format_button_name(file.file_name).split()))}", callback_data=f'{pre}#{file.file_id}'
+                    text=f"{get_size(file.file_size)} ▷ {format_button_name(file.file_name)}", callback_data=f'{pre}#{file.file_id}'
                 ),
             ]
             for file in files
