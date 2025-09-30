@@ -171,6 +171,19 @@ class Database:
         return False if not chat else chat.get('chat_status')
     
 
+
+    async def remove_stored_file_id(self, user_id: int):
+        await self.all.delete_one({"_id": user_id})
+
+    async def store_file_id_if_not_subscribed(self, user_id: int, file_id: str, mess: int):
+        exists = await self.all.find_one({"_id": user_id})
+        if exists:
+            await self.all.delete_one({"_id": user_id})
+        await self.all.insert_one({"_id": user_id, "file_id": file_id, "mess": mess})
+
+    async def get_stored_file_id(self, user_id: int) -> dict | None:
+        return await self.all.find_one({"_id": user_id})
+        
     async def re_enable_chat(self, id):
         chat_status=dict(
             is_disabled=False,
