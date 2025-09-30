@@ -71,7 +71,12 @@ async def start(client, message):
             parse_mode=enums.ParseMode.HTML
         )
         return
-        
+    data = message.command[1]
+    try:
+        pre, file_id = data.split('_', 1)
+    except:
+        file_id = data
+        pre = ""
     if AUTH_CHANNEL:
         try:
             # Fetch subscription statuses once
@@ -102,7 +107,7 @@ async def start(client, message):
                     except (IndexError, ValueError):
                         btn.append([InlineKeyboardButton("↻ Tʀʏ Aɢᴀɪɴ ↻", url=f"https://t.me/{temp.U_NAME}?start={message.command[1]}")])
 
-                await client.send_message(
+                sydback = await client.send_message(
                     chat_id=message.from_user.id,
                     text="Jᴏɪɴ Oᴜʀ Uᴘᴅᴀᴛᴇꜱ Cʜᴀɴɴᴇʟ ᴀɴᴅ Tʜᴇɴ Cʟɪᴄᴋ Oɴ ᴛʀʏ ᴀɢᴀɪɴ ᴛᴏ ɢᴇᴛ ʏᴏᴜʀ ʀᴇǫᴜᴇꜱᴛᴇᴅ ꜰɪʟᴇ.",
                     reply_markup=InlineKeyboardMarkup(btn),
@@ -154,7 +159,7 @@ async def start(client, message):
             parse_mode=enums.ParseMode.HTML
         )
         return  
-    data = message.command[1]
+    
     if data.split("-", 1)[0] == "SyD":
         user_id = int(data.split("-", 1)[1])
         syd = await referal_add_user(user_id, message.from_user.id)
@@ -192,11 +197,7 @@ async def start(client, message):
                   parse_mode=enums.ParseMode.HTML
              )
              return 
-    try:
-        pre, file_id = data.split('_', 1)
-    except:
-        file_id = data
-        pre = ""
+    
     if data.split("-", 1)[0] == "BATCH":
         sts = await message.reply("<b>Pʟᴇᴀꜱᴇ ᴡᴀɪᴛ...</b>")
         file_id = data.split("-", 1)[1]
