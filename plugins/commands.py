@@ -58,7 +58,7 @@ async def start(client, message):
         
         m=await message.reply_text("<i>ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ <b>ꜱᴇᴀʀᴄʜᴀʀᴄ ʙᴏᴛ</b>.\nʜᴏᴘᴇ ʏᴏᴜ'ʀᴇ ᴅᴏɪɴɢ ᴡᴇʟʟ...</i>")
         await asyncio.sleep(0.6)
-        await m.edit_text("Dᴏɴᴛ ꜰᴏʀɢᴇᴛ ᴛᴏ ꜱᴜᴩᴩᴏʀᴛ ᴜꜱ! @BOT_CRAcker_X 🍋")
+        await m.edit_text("Dᴏɴᴛ ꜰᴏʀɢᴇᴛ ᴛᴏ ꜱᴜᴩᴩᴏʀᴛ ᴜꜱ! \n@BOT_CRAcker_X 🍋")
         await asyncio.sleep(0.2)
         await m.delete()        
      #   m=await message.reply_sticker("CAACAgUAAxkBAAEEhMhoDZPwkkEHBXskRevsL_egtsTeUgACNxgAAhdtgVdIA1U0xHgGWh4E") 
