@@ -80,26 +80,34 @@ async def start(client, message):
     if AUTH_CHANNEL:
         try:
             # Fetch subscription statuses once
-            is_req_sub = await is_req_subscribed(client, message)
+            is_req_sub = await is_req_subscribed(client, message, AUTH_CHANNEL)
+            is_req_sub2 = await is_req_subscribed(client, message, SYD_CHANNEL)
             is_sub = await is_subscribed(client, message)
 
-            if not (is_req_sub and is_sub):
-            #if not is_req_sub:
+            if not (is_req_sub and is_req_sub2):
                 try:
-                    invite_link = await client.create_chat_invite_link(int(AUTH_CHANNEL), creates_join_request=True)
+                    invite_link, invite_link2 = None, None
+                    if not is_req_sub:
+                        invite_link = await client.create_chat_invite_link(int(AUTH_CHANNEL), creates_join_request=True)
+                    if not is_req_sub2:
+                        invite_link2 = await client.create_chat_invite_link(int(SYD_CHANNEL), creates_join_request=True)
                 except ChatAdminRequired:
                     logger.error("Make sure Bot is admin in Forcesub channel")
                     return
                 
                 btn = []
 
-                # Only add buttons if the user is not subscribed
-                if not is_req_sub:
-                    btn.append([InlineKeyboardButton("⊛ Jᴏɪɴ Uᴘᴅᴀᴛᴇꜱ CʜᴀɴɴᴇL ¹⊛", url=invite_link.invite_link)])
+                # Only invite_linkadd buttons if the user is not subscribed
+                if invite_link2:
+                    btn.append([InlineKeyboardButton("⊛ Jᴏɪɴ Uᴘᴅᴀᴛᴇꜱ CʜᴀɴɴᴇL ¹⊛", url=invite_link2.invite_link)])
+
+                if invite_link:
+                    btn.append([InlineKeyboardButton("⊛ Jᴏɪɴ Uᴘᴅᴀᴛᴇꜱ CʜᴀɴɴᴇL ²⊛", url=invite_link.invite_link)])
 
                 if not is_sub:
-                    btn.append([InlineKeyboardButton("⊛ Jᴏɪɴ Uᴘᴅᴀᴛᴇꜱ CʜᴀɴɴᴇL ²⊛", url="https://t.me/Mod_Moviez_X")])
-
+                    btn.append([InlineKeyboardButton("⊛ Jᴏɪɴ Uᴘᴅᴀᴛᴇꜱ CʜᴀɴɴᴇL ³⊛", url=f"https://t.me/{FSUB_UNAME}")])
+                    
+                    
                 if len(message.command) > 1 and message.command[1] != "subscribe":
                     try:
                         kk, file_id = message.command[1].split("_", 1)
@@ -109,7 +117,7 @@ async def start(client, message):
 
                 sydback = await client.send_message(
                     chat_id=message.from_user.id,
-                    text="Jᴏɪɴ Oᴜʀ Uᴘᴅᴀᴛᴇꜱ Cʜᴀɴɴᴇʟ ᴀɴᴅ Tʜᴇɴ Cʟɪᴄᴋ Oɴ ᴛʀʏ ᴀɢᴀɪɴ ᴛᴏ ɢᴇᴛ ʏᴏᴜʀ ʀᴇǫᴜᴇꜱᴛᴇᴅ ꜰɪʟᴇ.",
+                    text="<b>Jᴏɪɴ Oᴜʀ Uᴘᴅᴀᴛᴇꜱ Cʜᴀɴɴᴇʟ</b> ᴀɴᴅ Tʜᴇɴ Cʟɪᴄᴋ Oɴ Tʀʏ Aɢᴀɪɴ Tᴏ Gᴇᴛ Yᴏᴜʀ Rᴇǫᴜᴇꜱᴛᴇᴅ Fɪʟᴇ.",
                     reply_markup=InlineKeyboardMarkup(btn),
                     parse_mode=enums.ParseMode.MARKDOWN
                 )
