@@ -1,7 +1,7 @@
 import re
 from os import environ,getenv
 from Script import script 
-
+from pyrogram import utils as pyroutils
 id_pattern = re.compile(r'^.\d+$')
 def is_enabled(value, default):
     if value.lower() in ["true", "yes", "1", "enable", "y"]:
@@ -16,6 +16,11 @@ SESSION = environ.get('SESSION', 'Media_search')
 API_ID = int(environ.get('API_ID', ''))
 API_HASH = environ.get('API_HASH', '')
 BOT_TOKEN = environ.get('BOT_TOKEN', "")
+
+FSUB_UNAME = "Mod_Moviez_X"
+
+pyroutils.MIN_CHAT_ID = -999999999999
+pyroutils.MIN_CHANNEL_ID = -100999999999999
 
 # Bot settings
 CACHE_TIME = int(environ.get('CACHE_TIME', 300))
