@@ -82,6 +82,10 @@ class Database:
         doc = await self.req.find_one({'user_id': user_id, 'channel_id': channel_id})
         return bool(doc)
 
+    async def syd_user(self, user_id: int):
+        return await self.req.find_one({"_id": user_id})
+    
+
     async def add_join_oreq(self, user_id: int, channel_id: int):
         await self.req.update_one(
             {'user_id': user_id, 'channel_id': channel_id},
