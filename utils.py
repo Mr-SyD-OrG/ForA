@@ -106,7 +106,7 @@ async def get_authchannel(bot, query, auth_list):
     - Does NOT assign channels. Channels only added via join_request handler.
     """
     user_id = query.from_user.id
-    doc = await db.get_user(user_id)  # expects {"_id": id, "channels": [...], "count": n, "time": ts} or None
+    doc = await db.syd_user(user_id)  # expects {"_id": id, "channels": [...], "count": n, "time": ts} or None
     now = int(time.time())
 
     # Helper: return False + first/second auth channel when no DB channels exist
