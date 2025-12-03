@@ -45,6 +45,37 @@ class Database:
         self.syd = self.db.bots
         self.all = self.db.filed
         self.words = self.db.words
+        self.chnl = self.db.chnl
+
+
+
+    async def set_channels(self, user_id: int, channel_ids):
+        """
+        Overwrite user's channel list.
+        - channel_ids: single int or list/tuple of int
+        - Completely removes old channel list and sets new one
+        """
+
+        # Convert single value to list
+        if isinstance(channel_ids, int):
+            channel_ids = [channel_ids]
+
+        await self.chnl.update_one(
+            {"_id": user_id},
+            {"$set": {"channels": channel_ids}},
+            upsert=True
+        )
+
+    async def get_channels(self, user_id: int):
+        doc = await self.chnl.find_one({"_id": user_id})
+        return doc.get("channels", []) if doc else []
+
+    async def delete_user(self, user_id: int):
+        await self.chnl.delete_one({"_id": user_id})
+
+    async def clear_all(self):
+        """Drop entire collection."""
+        await self.chnl.drop()
         
     async def find_join_req(self, user_id: int, channel_id: int):
         doc = await self.req.find_one({'user_id': user_id, 'channel_id': channel_id})
