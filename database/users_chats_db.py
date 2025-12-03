@@ -82,6 +82,12 @@ class Database:
         doc = await self.req.find_one({'user_id': user_id, 'channel_id': channel_id})
         return bool(doc)
 
+    async def update_count(self, user_id: int, new_count: int):
+        await self.req.update_one(
+            {"_id": user_id},
+            {"$set": {"count": new_count}}
+        )
+    
     async def syd_user(self, user_id: int):
         return await self.req.find_one({"_id": user_id})
     
