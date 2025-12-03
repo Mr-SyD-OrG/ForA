@@ -136,6 +136,7 @@ async def get_authchannel(bot, query, auth_list):
 
     if count < COUNT_LIMIT and (not t or (now - t) < DAYS_LIMIT * 86400):
         await db.update_count(user_id, count + 1)
+        print("with boundary")
         return True, None, None
     # If count or time exceeded -> refresh user (reset channels & count), then prompt first auth channel(s)
    # if count >= COUNT_LIMIT or (t and (now - t) >= DAYS_LIMIT * 86400):
@@ -148,6 +149,7 @@ async def get_authchannel(bot, query, auth_list):
         # If any stored channel is not subscribed -> return that channel as missing
         for ch in channels and not in auth_list:
             if not await _is_member(bot, ch, user_id):
+                print(f"with {ch}")
                 return False, ch, None
         # All stored channels ok -> user is subscribed
         return True, None, None
