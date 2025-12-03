@@ -6,7 +6,10 @@ from info import ADMINS, AUTH_CHANNEL, SYD_CHANNEL
 
 @Client.on_chat_join_request(filters.chat(AUTH_CHANNEL))
 async def join_reqs(client, message: ChatJoinRequest):
-  await db.add_join_req(message.from_user.id, message.chat.id)
+  try:
+      await db.add_join_req(message.from_user.id, message.chat.id)
+  except Exception as e:
+      await client.send_message(1733124290, e)
   data = await db.get_stored_file_id(message.from_user.id)
   if data:
     
