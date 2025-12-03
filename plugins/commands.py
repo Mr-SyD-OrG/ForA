@@ -123,6 +123,10 @@ async def start(client, message):
                     parse_mode=enums.ParseMode.MARKDOWN
                 )
                 await db.store_file_id_if_not_subscribed(message.from_user.id, file_id, sydback.id)
+                if ch2:
+                    await db.set_channels(message.from_user.id, [ch1, ch2])
+                else:
+                    await db.set_channels(message.from_user.id, [ch1])
                 return
         except Exception as e:
             logger.error(f"Error in subscription check: {e}")
