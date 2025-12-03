@@ -97,12 +97,6 @@ async def join_reqqs(client, message: ChatJoinRequest):
     await db.remove_stored_file_id(message.from_user.id)
     return
 
-@Client.on_message(filters.command("delreq") & filters.private & filters.user(ADMINS))
-async def del_requests(client, message):
-    await db.delete_all_join_req()    
-    await message.reply("<b>⚙ ꜱᴜᴄᴄᴇꜱꜱғᴜʟʟʏ ᴄʜᴀɴɴᴇʟ ʟᴇғᴛ ᴜꜱᴇʀꜱ ᴅᴇʟᴇᴛᴇᴅ</b>")
-
-
 @Client.on_callback_query(filters.regex("^jrq:") & filters.user(ADMINS))
 async def jreq_callback(client, cq):
     action = cq.data.split(":")[1]
