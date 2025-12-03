@@ -110,13 +110,15 @@ class Database:
             upsert=True
         )
 
-        if result.modified_count == 0:
-            return
-        await self.req.update_one(
-            {"_id": user_id},
-            {"$set": {"time": int(time.time())}}
-        )
-
+        if result.modified_count == 1:
+            await self.req.update_one(
+                {"_id": user_id},
+                {"$set": {
+                    "time": int(time.time()),   # reset time
+                    "count": 0                  # reset count
+                }}
+            )
+            
     async def del_join_req(self, user_id: int, channel_id: int):
         await self.req.delete_one({'user_id': user_id, 'channel_id': channel_id})
 
