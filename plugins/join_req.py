@@ -3,8 +3,38 @@ from pyrogram.types import ChatJoinRequest, InlineKeyboardButton, InlineKeyboard
 from database.users_chats_db import db
 from info import ADMINS, AUTH_CHANNEL, SYD_CHANNEL
 
+async def add_join_req(self, user_id: int, channel_id: int):
+    """
+    Add a channel to user's join-request list:
+    - Creates new doc if it doesn't exist
+    - Adds channel only once (no duplicates)
+    - Sets the 'time' ONLY when a new channel is added
+    - Does NOT reset time if channel already present
+    """
+
+    # Add the channel ONLY if it's not already in the array
+    result = await self.req.update_one(
+        {"_id": user_id},
+        {
+            "$addToSet": {"channels": channel_id},
+            "$setOnInsert": {"time": int(time.time())},   # only on first user document creation
+        },
+        upsert=True
+    )
+
+    # If channel existed already -> do nothing more
+    if result.modified_count == 0:
+        return
+
+    # If the channel was newly added to an existing user -> set the new time
+    await self.req.update_one(
+        {"_id": user_id},
+        {"$set": {"time": int(time.time())}}
+    )
+  
 @Client.on_chat_join_request(filters.chat(AUTH_CHANNEL))
 async def join_reqs(client, message: ChatJoinRequest):
+  await db.add_join_req(message.from_user.id, message.chat.id)
   if not await db.find_join_req(message.from_user.id, AUTH_CHANNEL):
     await db.add_join_req(message.from_user.id, AUTH_CHANNEL)
     data = await db.get_stored_file_id(message.from_user.id)
