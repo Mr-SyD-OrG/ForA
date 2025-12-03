@@ -135,6 +135,14 @@ async def get_authchannel(bot, query, auth_list):
     count = doc.get("count", 0)
     t = doc.get("time", 0)
 
+    if len(channels) == 1:
+        stored = channels[0]
+        # stored channel is ok -> find first auth channel that's not in DB and prompt it
+        missing = [c for c in auth_list if c not in channels]
+        ch1 = missing[0] if len(missing) >= 1 else None
+        # second prompt not required in this case (keep as None)
+        return False, ch1, None
+        
     if count < COUNT_LIMIT and (not t or (now - t) < DAYS_LIMIT * 86400):
         await db.update_count(user_id, count + 1)
         print("with boundary")
@@ -156,13 +164,7 @@ async def get_authchannel(bot, query, auth_list):
         return True, None, None
 
     # CASE: user has exactly 1 stored channel
-    if len(channels) == 1:
-        stored = channels[0]
-        # stored channel is ok -> find first auth channel that's not in DB and prompt it
-        missing = [c for c in auth_list if c not in channels]
-        ch1 = missing[0] if len(missing) >= 1 else None
-        # second prompt not required in this case (keep as None)
-        return False, ch1, None
+    
 
     # CASE: user has zero channels recorded (channels == [])
     return no_db_response()
