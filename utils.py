@@ -134,11 +134,12 @@ async def get_authchannel(bot, query, auth_list):
     channels = doc.get("channels", []) or []
     count = doc.get("count", 0)
     t = doc.get("time", 0)
-
+    missing = [c for c in auth_list if c not in channels
+    if not missing:
+        return True, None, None
     if len(channels) == 1:
         stored = channels[0]
         # stored channel is ok -> find first auth channel that's not in DB and prompt it
-        missing = [c for c in auth_list if c not in channels]
         ch1 = missing[0] if len(missing) >= 1 else None
         # second prompt not required in this case (keep as None)
         return False, ch1, None
@@ -156,7 +157,7 @@ async def get_authchannel(bot, query, auth_list):
     if len(channels) >= 2:
         # Check stored channels only (per your requirement)
         # If any stored channel is not subscribed -> return that channel as missing
-        for ch in (c for c in channels if c not in auth_list):
+        for ch in missing:
             if not await _is_member(bot, ch, user_id):
                 print(f"with {ch}")
                 return False, ch, None
