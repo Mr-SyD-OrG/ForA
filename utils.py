@@ -147,7 +147,7 @@ async def get_authchannel(bot, query, auth_list):
     if len(channels) >= 2:
         # Check stored channels only (per your requirement)
         # If any stored channel is not subscribed -> return that channel as missing
-        for ch in channels and not in auth_list:
+        for ch in (c for c in channels if c not in auth_list):
             if not await _is_member(bot, ch, user_id):
                 print(f"with {ch}")
                 return False, ch, None
