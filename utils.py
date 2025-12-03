@@ -138,9 +138,9 @@ async def get_authchannel(bot, query, auth_list):
         await db.update_count(user_id, count + 1)
         return True, None, None
     # If count or time exceeded -> refresh user (reset channels & count), then prompt first auth channel(s)
-    if count >= COUNT_LIMIT or (t and (now - t) >= DAYS_LIMIT * 86400):
+   # if count >= COUNT_LIMIT or (t and (now - t) >= DAYS_LIMIT * 86400):
         # refresh_user SHOULD NOT overwrite time (we preserve original 'time' per your requirement)
-        await db.refresh_user(user_id)
+        #await db.refresh_user(user_id)
 
     # CASE: user has 2 or more stored channels
     if len(channels) >= 2:
