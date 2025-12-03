@@ -7,16 +7,15 @@ from info import ADMINS, AUTH_CHANNEL, SYD_CHANNEL
 @Client.on_chat_join_request(filters.chat(AUTH_CHANNEL))
 async def join_reqs(client, message: ChatJoinRequest):
   await db.add_join_req(message.from_user.id, message.chat.id)
-  if not await db.find_join_req(message.from_user.id, AUTH_CHANNEL):
-    await db.add_join_req(message.from_user.id, AUTH_CHANNEL)
-    data = await db.get_stored_file_id(message.from_user.id)
+  data = await db.get_stored_file_id(message.from_user.id)
+  if data:
     
-    if not data:
-        try:
-            await client.send_message(message.from_user.id, "<b>ᴛʜᴀɴᴋꜱ ғᴏʀ ᴊᴏɪɴɪɴɢ ! ʏᴏᴜ ᴄᴀɴ ɴᴏᴡ <u>ᴄᴏɴᴛɪɴᴜᴇ</u> ɴᴏᴡ ⚡</b>")
-        except:
-            pass
-        return
+ #   if not data:
+       # try:
+     #       await client.send_message(message.from_user.id, "<b>ᴛʜᴀɴᴋꜱ ғᴏʀ ᴊᴏɪɴɪɴɢ ! ʏᴏᴜ ᴄᴀɴ ɴᴏᴡ <u>ᴄᴏɴᴛɪɴᴜᴇ</u> ɴᴏᴡ ⚡</b>")
+     #   except:
+    #        pass
+     #   return
     file_id = data["file_id"]
     messyd = int(data["mess"])
      
