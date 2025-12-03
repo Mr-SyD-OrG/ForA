@@ -50,11 +50,29 @@ class Database:
         doc = await self.req.find_one({'user_id': user_id, 'channel_id': channel_id})
         return bool(doc)
 
-    async def add_join_req(self, user_id: int, channel_id: int):
+    async def add_join_oreq(self, user_id: int, channel_id: int):
         await self.req.update_one(
             {'user_id': user_id, 'channel_id': channel_id},
             {'$set': {'user_id': user_id, 'channel_id': channel_id}},
             upsert=True
+        )
+
+    async def add_join_req(self, user_id: int, channel_id: int):
+    # Add the channel ONLY if it's not already in the array
+        result = await self.req.update_one(
+            {"_id": user_id},
+            {
+                "$addToSet": {"channels": channel_id},
+                "$setOnInsert": {"time": int(time.time())},   # only on first user document creation
+            },
+            upsert=True
+        )
+
+        if result.modified_count == 0:
+            return
+        await self.req.update_one(
+            {"_id": user_id},
+            {"$set": {"time": int(time.time())}}
         )
 
     async def del_join_req(self, user_id: int, channel_id: int):
