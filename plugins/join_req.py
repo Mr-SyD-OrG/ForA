@@ -107,40 +107,48 @@ async def del_requests(client, message):
 async def jreq_callback(client, cq):
     action = cq.data.split(":")[1]
 
-    if action == "del_auth":
-        result = await db.delete_channel_users(AUTH_CHANNEL)
-        await cq.message.reply(f"🗑️ Deleted **{result.deleted_count}** users from AUTH_CHANNEL.")
-        return await cq.answer("Deleted!")
+    # ---- REMOVE CHANNEL FLOW ----
+    if action == "remove":
+        ask = await cq.message.reply("📨 Send the **channel ID** you want to remove from all users.")
+        await cq.answer()
 
-    if action == "del_syd":
-        result = await db.delete_channel_users(SYD_CHANNEL)
-        await cq.message.reply(f"🗑️ Deleted **{result.deleted_count}** users from SYD_CHANNEL.")
-        return await cq.answer("Deleted!")
+        try:
+            # WAIT FOR ADMIN INPUT
+            response = await client.listen(
+                chat_id=cq.from_user.id,
+                timeout=60
+            )
+        except TimeoutError:
+            await ask.edit("⏳ Timed out. Try again.")
+            return
 
+        if not response.text.isdigit():
+            return await response.reply("❌ Invalid ID. Only numbers allowed.")
+
+        channel_id = int(response.text)
+        modified = await db.remove_channel_from_all_users(channel_id)
+
+        return await response.reply(
+            f"✅ Removed `{channel_id}` from **{modified}** users."
+        )
+
+    # ---- DELETE ALL ----
     if action == "del_all":
-        await db.delete_all_join_req()
-        await cq.message.reply("🗑️ All join requests deleted.")
+        await db.del_all_join_req()
+        await cq.message.reply("🗑️ All join-requests deleted.")
         return await cq.answer("Cleared!")
 
     if action == "count":
-        auth_count = await db.req.count_documents({"channel_id": AUTH_CHANNEL})
-        syd_count = await db.req.count_documents({"channel_id": SYD_CHANNEL})
         total = await db.req.count_documents({})
-
-        await cq.message.reply(
-            f"📊 **Join Request Count:**\n"
-            f"• AUTH_CHANNEL: `{auth_count}`\n"
-            f"• SYD_CHANNEL : `{syd_count}`\n"
-            f"• Total       : `{total}`"
-        )
+        await cq.message.reply(f"📊 Total join-requests: `{total}`")
         return await cq.answer("Loaded!")
 
+      
 @Client.on_message(filters.command("jreq") & filters.user(ADMINS))
 async def jreq_menu(client, message):
     keyboard = InlineKeyboardMarkup([
-        [InlineKeyboardButton("🗑️ Delete AUTH Channel", callback_data="jrq:del_auth")],
-        [InlineKeyboardButton("🗑️ Delete SYD Channel", callback_data="jrq:del_syd")],
-        [InlineKeyboardButton("🗑️ Delete ALL", callback_data="jrq:del_all")],
+        [InlineKeyboardButton("❌ Remove Channel from All Users", callback_data="jrq:remove")],
+        [InlineKeyboardButton("❌ Delete ALL Join-Requests", callback_data="jrq:del_all")],
         [InlineKeyboardButton("📊 View Count", callback_data="jrq:count")],
     ])
 
@@ -148,3 +156,39 @@ async def jreq_menu(client, message):
         "**📂 Join-Request Manager**\nSelect an option:",
         reply_markup=keyboard
     )
+
+
+@Client.on_message(filters.command("jreq_user") & filters.user(ADMINS))
+async def jreq_user_info(client, message):
+    if len(message.command) < 2:
+        return await message.reply("Usage: `/jreq_user <user_id>`")
+
+    try:
+        user_id = int(message.command[1])
+    except:
+        return await message.reply("❌ Invalid user_id.")
+
+    doc = await db.syd_user(user_id)
+    if not doc:
+        return await message.reply("❌ No such user in join-req database.")
+
+    channels = doc.get("channels", [])
+    count = doc.get("count", 0)
+    timestamp = doc.get("time", 0)
+
+    if timestamp:
+        from datetime import datetime
+        time_text = datetime.fromtimestamp(timestamp).strftime("%Y-%m-%d %H:%M:%S")
+    else:
+        time_text = "Not set"
+
+    text = (
+        f"📌 **User Join-Req Info**\n\n"
+        f"👤 **User ID:** `{user_id}`\n"
+        f"📚 **Channels:** `{channels}`\n"
+        f"⏱ **Time:** `{time_text}`\n"
+        f"🔢 **Count:** `{count}`"
+    )
+
+    await message.reply(text)
+  
