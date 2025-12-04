@@ -93,8 +93,8 @@ from pyrogram.errors import UserNotParticipant
 from pyrogram import enums
 
 # configure these as you already have
-COUNT_LIMIT = 5
-DAYS_LIMIT = 2  # days
+COUNT_LIMIT = 12
+DAYS_LIMIT = 4  # days
 
 
 async def get_authchannel(bot, query, auth_list):
