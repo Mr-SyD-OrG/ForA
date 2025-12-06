@@ -2,7 +2,7 @@ from pyrogram import Client, filters, enums
 from pyrogram.types import ChatJoinRequest, InlineKeyboardButton, InlineKeyboardMarkup
 from database.users_chats_db import db
 from info import ADMINS, AUTH_CHANNEL, SYD_CHANNEL, CUSTOM_FILE_CAPTION
-from utils import extract_audio_subtitles_formatted
+from utils import extract_audio_subtitles_formatted, get_size
 from database.ia_filterdb import get_file_details
 
 @Client.on_chat_join_request(filters.chat(AUTH_CHANNEL))
