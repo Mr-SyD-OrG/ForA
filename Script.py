@@ -5,8 +5,9 @@ I Cᴀɴ Pʀᴏᴠɪᴅᴇ Mᴏᴠɪᴇ Fᴏʀ Yᴏᴜ Jᴜsᴛ Tʏᴩᴇ Aɴᴅ
 <blockquote>Oɴᴇ Oꜰ Tʜᴇ Wᴏʀʟᴅꜱ Cᴏᴏʟᴇꜱᴛ, Bɪɢɢᴇꜱᴛ Aɴᴅ Fɪɴᴇꜱᴛ DᴀᴛᴀBᴀꜱᴇ</blockquote></b>"""
     
     START_TXT = """<b>Hᴇʏ └⏤‌‌‌мґ🤘,
-I'ᴍ SᴇᴀʀᴄʜAʀᴄ Bᴏᴛ Wɪᴛʜ Sᴜᴩᴇʀʙ Fᴇᴀᴛᴜʀᴇꜱ. 
-<i>Jᴜꜱᴛ Aᴅᴅ Mᴇ Tᴏ Yᴏᴜʀ Gʀᴏᴜᴘ Tᴏ Sᴇᴇ Tʜᴇ Mᴀɢɪᴄ 💫</i>
+    
+I'ᴍ SᴇᴀʀᴄʜAʀᴄ Bᴏᴛ Wɪᴛʜ Sᴜᴩᴇʀʙ Fᴇᴀᴛᴜʀᴇꜱ. Jᴜꜱᴛ Aᴅᴅ Mᴇ Tᴏ Yᴏᴜʀ Gʀᴏᴜᴘ Tᴏ Sᴇᴇ Tʜᴇ Mᴀɢɪᴄ 💫
+
 <blockquote>Oɴᴇ Oꜰ Tʜᴇ Wᴏʀʟᴅꜱ Cᴏᴏʟᴇꜱᴛ, Bɪɢɢᴇꜱᴛ Aɴᴅ Fɪɴᴇꜱᴛ DᴀᴛᴀBᴀꜱᴇ</blockquote></b>"""
     
     GSTART_TXT = """<b>Hᴇʏ └⏤‌‌‌мґ🤘, 
@@ -15,10 +16,10 @@ I'ᴍ SᴇᴀʀᴄʜAʀᴄ Bᴏᴛ Wɪᴛʜ Sᴜᴩᴇʀʙ Fᴇᴀᴛᴜʀᴇꜱ
 <i>Tʜᴀɴᴋꜱ ꜰᴏʀ ᴀᴅᴅɪɴɢ ᴍᴇ 💫.</i></b>"""
     
     HELP_TXT = """<b>ʜᴇʏ {},
-ᴄʜᴏᴏꜱᴇ ᴛʜᴇ ᴄᴀᴛᴇɢᴏʀʏ ᴏꜰ ᴄᴏᴍᴍᴀɴᴅ ʏᴏᴜ ᴡᴀɴᴛ ᴄᴜʀʀᴇɴᴛʟʏ 💥.</b>"""
+<blockquote>ᴄʜᴏᴏꜱᴇ ᴛʜᴇ ᴄᴀᴛᴇɢᴏʀʏ ᴏꜰ ᴄᴏᴍᴍᴀɴᴅ ʏᴏᴜ ᴡᴀɴᴛ ᴄᴜʀʀᴇɴᴛʟʏ 💥.</blockquote></b>"""
     HLP_TXT = """<b>ʜᴇʏ {},
 Cʜᴏᴏꜱᴇ Tʜᴇ Ғᴇᴀᴛᴜʀᴇ Tʜᴀᴛ Yᴏᴜ Nᴇᴇᴅ..... Pʟᴇᴀꜱᴇ.. 😇</b>"""
-    ABOUT_TXT = """<b>‣ Mʏ ɴΔᴍᴇ : {}\n‣ Oᴡɴᴇʀ : <a href='https://t.me/SyD_XyZ'>Mг SƴD 🪩</a>\n‣ Sᴜᴩᴩᴏʀᴛᴇʀ : <a href='tg://settings'>{} {}</a> \n‣ LɪʙʀΔʀʏ : <a href='https://t.me/+nwxHOizrSXQzZTI1'>Tɢ 🫥</a>\n‣ LᴀɴɢᴜΔɢᴇ : <a href='https://t.me/+-VpGTWWWTldhZWNl'>🎐Δʜʜ...</a>\n‣ DᴀᴛΔ-Bᴀsᴇ : <a href='https://t.me/+0Zi1FC4ulo8zYzVl'>Pʀᴏ..ᴇᴅ</a>\n‣ ʙΔᴄᴋ-Uᴩ : <a href="https://t.me/nt_Backup/5">UʀɢΞɴᴛ BΔᴄᴋ-Uᴩ🎗🔙🔄</a>\n‣ Hᴏsᴛᴇᴅ Δᴛ  : <a href='https://t.me/mod_moviez_x'>Tɢ 🫥</a>\n‣ Bᴜɪʟᴅ Vᴇʀꜱɪᴏɴ : ᴠ1.0 [ᴍʀ.ꜱʏᴅ✨]</b>"""
+    ABOUT_TXT = """<b>‣ Mʏ ɴΔᴍᴇ : {}\n‣ Oᴡɴᴇʀ : <a href='https://t.me/SyD_XyZ'>Mг SƴD 🪩</a>\n<blockquote>‣ Sᴜᴩᴩᴏʀᴛᴇʀ : <a href='tg://settings'>{} {}</a> \n‣ LɪʙʀΔʀʏ : <a href='https://t.me/+nwxHOizrSXQzZTI1'>Tɢ 🫥</a>\n‣ LᴀɴɢᴜΔɢᴇ : <a href='https://t.me/+-VpGTWWWTldhZWNl'>🎐Δʜʜ...</a>\n‣ DᴀᴛΔ-Bᴀsᴇ : <a href='https://t.me/+0Zi1FC4ulo8zYzVl'>Pʀᴏ..ᴇᴅ</a>\n‣ ʙΔᴄᴋ-Uᴩ : <a href="https://t.me/nt_Backup/5">UʀɢΞɴᴛ BΔᴄᴋ-Uᴩ🎗🔙🔄</a>\n‣ Hᴏsᴛᴇᴅ Δᴛ  : <a href='https://t.me/mod_moviez_x'>Tɢ 🫥</a>\n‣ Bᴜɪʟᴅ Vᴇʀꜱɪᴏɴ : ᴠ2.0 [ᴍʀ.ꜱʏᴅ✨]</b></blockquote>"""
     
     CHANNELS = """
 <b>⚡ Oᴜʀ Gʀᴏᴜᴘs Δɴ' Cʜᴀɴɴᴇʟs Iɴғᴏ.. ⚡ 
