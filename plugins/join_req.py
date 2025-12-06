@@ -1,8 +1,9 @@
 from pyrogram import Client, filters, enums
 from pyrogram.types import ChatJoinRequest, InlineKeyboardButton, InlineKeyboardMarkup
 from database.users_chats_db import db
-from info import ADMINS, AUTH_CHANNEL, SYD_CHANNEL
-
+from info import ADMINS, AUTH_CHANNEL, SYD_CHANNEL, CUSTOM_FILE_CAPTION
+from utils import extract_audio_subtitles_formatted
+from database.ia_filterdb import get_file_details
 
 @Client.on_chat_join_request(filters.chat(AUTH_CHANNEL))
 async def join_reqs(client, message: ChatJoinRequest):
@@ -21,14 +22,29 @@ async def join_reqs(client, message: ChatJoinRequest):
      #   return
     file_id = data["file_id"]
     messyd = int(data["mess"])
-     
+    f_caption = None
     try:
+        files_ = await get_file_details(file_iid)
+        if files_:
+            files = files_[0]
+            sydcp = await extract_audio_subtitles_formatted(files.caption)
+            if CUSTOM_FILE_CAPTION:
+                try:
+                    f_caption = CUSTOM_FILE_CAPTION.format(
+                        file_name=title or '',
+                        file_size=size or '',
+                        file_caption='',
+                        sydaudcap=sydcp if sydcp else ''
+                    )
+                except:
+                    pass
         syd = await client.get_messages(chat_id=message.from_user.id, message_ids=messyd)
     except:
         syd = None
     msg = await client.send_cached_media(
         chat_id=message.from_user.id,
         file_id=file_id,
+        caption=f_caption,
         reply_markup=InlineKeyboardMarkup(
             [
              [
