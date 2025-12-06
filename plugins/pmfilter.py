@@ -1542,7 +1542,10 @@ async def cb_handler(client: Client, query: CallbackQuery):
                 ],[
                     InlineKeyboardButton('⊜ ᴄ0ᴍᴍᴀɴᴅꜱ ⊜', callback_data='help'),
                     InlineKeyboardButton('⊛ Δʙᴏᴜᴛ ⊛', callback_data='about')
-                  ]]
+                ],[
+                    InlineKeyboardButton('⚝ ᴜᴘᦔᴀᴛꫀꜱ ⚝', callback_data='channels'),
+                    InlineKeyboardButton('⚹ ᴊᴏɪɴ ⚹', url='https://t.me/Bot_Cracker_X/20')
+                 ]]
         else:
             buttons = [[
                     InlineKeyboardButton('☒ Δᴅᴅ Mᴇ Tᴏ Yᴏᴜʀ Gʀᴏᴜᴩ ☒', url=f'http://telegram.me/{temp.U_NAME}?startgroup=true')
@@ -1550,27 +1553,18 @@ async def cb_handler(client: Client, query: CallbackQuery):
                     InlineKeyboardButton('⊜ ᴄ0ᴍᴍᴀɴᴅꜱ ⊜', callback_data='help'),
                     InlineKeyboardButton('⊛ Δʙᴏᴜᴛ ⊛', callback_data='about')
                 ],[
-                    InlineKeyboardButton('⚝ ᴜᴘᦔΔᴛꫀ𝘴 ⚝', callback_data='channels')
+                    InlineKeyboardButton('⚝ ᴜᴘᦔᴀᴛꫀꜱ ⚝', callback_data='channels'),
+                    InlineKeyboardButton('⚹ ᴊᴏɪɴ ⚹', url='https://t.me/Bot_Cracker_X/20')
                  ]]
         
         reply_markup = InlineKeyboardMarkup(buttons)
-        current_time = datetime.now(pytz.timezone(TIMEZONE))
-        curr_time = current_time.hour        
-        if curr_time < 12:
-            gtxt = "Gᴏᴏᴅ ᴍᴏʀɴɪɴG 🌄👋" 
-        elif curr_time < 17:
-            gtxt = "Gᴏᴏᴅ ᴀғᴛᴇʀɴᴏᴏɴ 🥵👋" 
-        elif curr_time < 21:
-            gtxt = "Gᴏᴏᴅ ᴇᴠᴇɴɪɴG 🌅👋"
-        else:
-            gtxt = "Gᴏᴏᴅ ɴɪɢʜT 🥱😪👋"
         await client.edit_message_media(
             query.message.chat.id, 
             query.message.id, 
             InputMediaPhoto(random.choice(PICS))
         )
         await query.message.edit_text(
-            text=script.START_TXT.format(query.from_user.mention, gtxt, temp.U_NAME, temp.B_NAME),
+            text=script.START_TXT.format(query.from_user.mention, temp.U_NAME, temp.B_NAME),
             reply_markup=reply_markup,
             parse_mode=enums.ParseMode.HTML
         )
