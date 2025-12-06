@@ -27,6 +27,9 @@ async def join_reqs(client, message: ChatJoinRequest):
         files_ = await get_file_details(file_iid)
         if files_:
             files = files_[0]
+            title = '' + ' '.join(filter(lambda x: not x.startswith('[') and not x.startswith('@'), files.file_name.replace('_', ' ').split()))
+            size = get_size(files.file_size)
+            f_caption = f"<code>{title}</code>"
             sydcp = await extract_audio_subtitles_formatted(files.caption)
             if CUSTOM_FILE_CAPTION:
                 try:
