@@ -172,7 +172,7 @@ async def get_authchannel(bot, query, auth_list):
     # CASE: user has zero channels recorded (channels == [])
     return no_db_response()
 
-async def extract_audio_subtitles_formatted(text: str):
+async def extract_audio_subtitles_formatted(text: str) -> str:
     cleaned = re.sub(r"[🔊📜]\s*(?=(Audio|Subtitles))", "", text, flags=re.IGNORECASE)
     t = cleaned.replace("\n", " ").strip()
     audio = None
@@ -185,9 +185,9 @@ async def extract_audio_subtitles_formatted(text: str):
         subs = m_subs.group(1).strip().rstrip(",.; ")
     parts = []
     if audio:
-        parts.append(f"\n🔊 Audio: <a href="https://t.me/Mod_Moviez_X">{audio}</a>")
+        parts.append(f"\n🔊 Audio: <a href='https://t.me/Mod_Moviez_X'>{audio}</a>")
     if subs:
-        parts.append(f"📜 Subtitles: <a href="https://t.me/Bot_Cracker">{subs}</a>")
+        parts.append(f"📜 Subtitles: <a href='https://t.me/Bot_Cracker'>{subs}</a>")
 
     return "\n".join(parts)
 
