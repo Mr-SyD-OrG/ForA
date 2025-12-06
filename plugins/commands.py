@@ -53,7 +53,7 @@ async def start(client, message):
                     InlineKeyboardButton('⊛ ᴀʙᴏᴜᴛ ⊛', callback_data='about')
                 ],[
                     InlineKeyboardButton('⚝ ᴜᴘᦔᴀᴛꫀꜱ ⚝', callback_data='channels'),
-                    InlineKeyboardButton('⚹ ᴊᴏɪɴ ⚹', url='https://t.me/Bot_Cracker_X/20')
+                    InlineKeyboardButton('⚹ ᴊᴏɪɴ ⚹', url='https://t.me/Mod_Moviez_X/20')
                   ]]
         reply_markup = InlineKeyboardMarkup(buttons)
         
@@ -142,7 +142,8 @@ async def start(client, message):
                     InlineKeyboardButton('⇱  ᴄ0ᴍᴍᴀɴᴅꜱ  ⇲', callback_data='help'),
                     InlineKeyboardButton('⊛ Δʙᴏᴜᴛ ⊛', callback_data='about')
                 ],[
-                    InlineKeyboardButton('⚝ ᴜᴘᦔΔᴛꫀ𝘴 ⚝', callback_data='channels')
+                    InlineKeyboardButton('⚝ ᴜᴘᦔᴀᴛꫀꜱ ⚝', callback_data='channels'),
+                    InlineKeyboardButton('⚹ ᴊᴏɪɴ ⚹', url='https://t.me/Bot_Cracker_X/20')
                   ]]
         reply_markup = InlineKeyboardMarkup(buttons)
         m=await message.reply_text("<i>ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ <b>ᴍʀ ᴍᴏᴠɪᴇꜱ ꜰɪʟᴇ ʙᴏᴛ</b>.\nʜᴏᴘᴇ ʏᴏᴜ'ʀᴇ ᴅᴏɪɴɢ ᴡᴇʟʟ...</i>")
