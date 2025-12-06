@@ -24,7 +24,7 @@ async def join_reqs(client, message: ChatJoinRequest):
     messyd = int(data["mess"])
     f_caption = None
     try:
-        files_ = await get_file_details(file_iid)
+        files_ = await get_file_details(file_id)
         if files_:
             files = files_[0]
             title = '' + ' '.join(filter(lambda x: not x.startswith('[') and not x.startswith('@'), files.file_name.replace('_', ' ').split()))
