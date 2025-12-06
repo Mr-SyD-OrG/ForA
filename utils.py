@@ -176,7 +176,7 @@ async def extract_audio_subtitles_formatted(text: str) -> str:
     cleaned = re.sub(r"[🔊📜]", "", text)
     t = cleaned.replace("\n", " ").strip()
     audio_pattern = r"(?:Audio\s*[:\-]\s*)([A-Za-z0-9 ,/&]+)"
-    subs_pattern  = r"(?:Subtitles?|Subs?\s*[:\-]\s*)([A-Za-z0-9 ,/&]+)"
+    subs_pattern = r"\b(?:Subtitles?|Subs)\b\s*[:\-]\s*([A-Za-z0-9 ,/&]+)"
     m_audio = re.search(audio_pattern, t, flags=re.IGNORECASE)
     audio = m_audio.group(1).strip() if m_audio else None
     m_subs = re.search(subs_pattern, t, flags=re.IGNORECASE)
