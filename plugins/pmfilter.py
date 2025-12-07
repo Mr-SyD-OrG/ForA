@@ -2308,7 +2308,8 @@ def format_button_name(file_name: str) -> str:
             ep = int(episode_match.group(1) or episode_match.group(2))
 
     # Clean existing season/episode markers from file name
-    cleaned_name = re.sub(r"(?i)(season\s*\d+|s\d+\s*e\d+|s\d+|episode\s*\d+|ep?\s*[\d]+|ep?\s*[_\.-]*\d+)", "", file_name)
+    cleaned_name = re.sub(r"(?i)(?<!\w)(season[\s._-]*\d{1,2}|s0*\d{1,2}[\s._-]*e0*\d{1,3}|s0*\d{1,2}|episode[\s._-]*\d{1,3}|ep[\s._-]*\d{1,3}|e[\s._-]*\d{1,3})(?!\d)", "", file_name)
+    cleaned_name = cleaned_name.replace("_", " ")
     cleaned_name = re.sub(r"\s+", " ", cleaned_name).strip()
     parts = [p for p in cleaned_name.split() if not (p.startswith("[") or p.startswith("@") or p.startswith("www."))]
     
